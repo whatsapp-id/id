@@ -3,36 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Bot Manager</title>
+    <title>WhatsApp Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* === WHATSAPP THEME === */
+            /* === WHATSAPP THEME REFINED === */
             --wa-primary: #00a884;
             --wa-primary-dark: #008069;
             --wa-secondary: #25D366;
             --wa-accent: #00ffbf;
-            --bg-body: #f0f2f5;
+            
+            /* Light Mode Defaults */
+            --bg-body: #eff2f5;
             --bg-card: #ffffff;
+            --bg-header: #00a884;
             --text-pri: #111B21;
-            --text-sec: #667781;
+            --text-sec: #54656f;
             --border: #e9edef;
+            --input-bg: #ffffff;
             --danger: #EA0038;
-            --radius: 12px;
-            --shadow: 0 2px 8px rgba(11,20,26,0.15);
+            --radius: 16px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --header-text: #ffffff;
         }
 
-        /* DARK MODE */
+        /* DARK MODE (Native WA Web Colors) */
         body.dark-mode {
             --wa-primary: #00a884;
             --wa-primary-dark: #202c33;
-            --bg-body: #0d1418;
-            --bg-card: #1f2c33;
+            --bg-body: #111b21; /* WA Dark Background */
+            --bg-card: #202c33; /* WA Dark Card */
+            --bg-header: #202c33;
             --text-pri: #e9edef;
             --text-sec: #8696a0;
             --border: #2a3942;
-            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --input-bg: #2a3942;
+            --danger: #ef5350;
+            --shadow: 0 4px 12px rgba(0,0,0,0.2);
+            --header-text: #aebac1;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -41,148 +50,320 @@
             background-color: var(--bg-body); 
             color: var(--text-pri); 
             min-height: 100vh; 
-            transition: 0.3s; 
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
         }
 
         /* === NEON ANIMATION LINE === */
         .neon-line {
             width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--wa-secondary), #000, var(--wa-secondary), transparent);
+            height: 3px;
+            background: linear-gradient(90deg, var(--wa-secondary), #e6ff00, var(--wa-secondary));
             background-size: 200% 100%;
             border-radius: 5px;
-            margin: 15px 0;
-            box-shadow: 0 0 10px var(--wa-primary);
-            animation: neonFlow 5s linear infinite
+            margin: 20px 0;
+            opacity: 0.8;
+            box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
+            animation: neonFlow 3s linear infinite
         }
-        
-        .loading-bar 
         
         @keyframes neonFlow {
             0% { background-position: 100% 0; }
             100% { background-position: -100% 0; }
         }
 
-
         /* HEADER */
-        .header { background: var(--wa-primary-dark); color: var(--text-sec); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .header-logo { font-weight: bold; font-size: 18px; display: flex; align-items: center; gap: 10px; color: #b1b3b5; }
-        .header-actions { display: flex; gap: 15px; }
-        .header-btn { background: none; border: none; color: #b1b3b5; font-size: 18px; cursor: pointer; padding: 5px; }
-        .header-btn:hover { color: var(--text-pri); }
+        .header { 
+            background: var(--bg-header); 
+            color: white; 
+            padding: 10px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header-logo { 
+            font-weight: 700; 
+            font-size: 21px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            letter-spacing: 0.5px;
+        }
+        
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        
+        .header-btn { 
+            background: rgba(255,255,255,0.1); 
+            border: none; 
+            color: white; 
+            font-size: 16px; 
+            cursor: pointer; 
+            width: 35px; height: 35px; 
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .header-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
         
         /* FLOATING MENU (SIDEBAR) */
-        .floating-menu-btn { position: fixed; bottom: 30px; right: 25px; width: 55px; height: 55px; background: var(--wa-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 0 20px rgba(0, 168, 132, 0.4); z-index: 1001; cursor: pointer; border: none; transition: 0.3s; }
+        .floating-menu-btn { 
+            position: fixed; bottom: 30px; right: 25px; 
+            width: 60px; height: 60px; 
+            background: var(--wa-primary); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-size: 24px; 
+            box-shadow: 0 4px 20px rgba(0, 168, 132, 0.4); 
+            z-index: 1001; cursor: pointer; border: none; 
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
         .floating-menu-btn:active { transform: scale(0.9); }
+        .floating-menu-btn:hover { transform: rotate(90deg); }
         
         .floating-menu { 
-            position: fixed; bottom: 100px; right: 25px; 
-            background: rgba(31, 44, 51, 0.95); /* Semi transparan dark */
-            backdrop-filter: blur(10px);
-            border-radius: 16px; padding: 10px; 
+            position: fixed; bottom: 110px; right: 25px; 
+            background: var(--bg-card);
+            border-radius: 16px; padding: 12px; 
             display: none; flex-direction: column; gap: 8px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            z-index: 1000; min-width: 200px; 
-            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            z-index: 1000; min-width: 220px; 
+            border: 1px solid var(--border); 
             transform-origin: bottom right;
         }
-        body:not(.dark-mode) .floating-menu { background: rgba(255, 255, 255, 0.95); border: 1px solid #ddd; }
 
         .floating-menu.active { display: flex; animation: expandUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        .menu-item { padding: 12px 15px; border-radius: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-pri); transition: 0.2s; font-weight: 500; font-size: 14px; }
-        .menu-item i { width: 20px; text-align: center; font-size: 16px; }
-        .menu-item:hover, .menu-item.active { background: var(--wa-primary); color: white; box-shadow: 0 4px 10px rgba(0, 168, 132, 0.3); }
+        .menu-item { 
+            padding: 12px 18px; 
+            border-radius: 12px; 
+            display: flex; align-items: center; gap: 15px; 
+            cursor: pointer; 
+            color: var(--text-pri); 
+            transition: 0.2s; font-weight: 500; font-size: 14px; 
+        }
+        .menu-item i { width: 20px; text-align: center; font-size: 16px; color: var(--text-sec); transition: 0.2s; }
+        .menu-item:hover { background: rgba(0, 168, 132, 0.08); }
+        .menu-item:hover i { color: var(--wa-primary); }
+        .menu-item.active { background: var(--wa-primary); color: white; box-shadow: 0 4px 12px rgba(0, 168, 132, 0.3); }
+        .menu-item.active i { color: white; }
 
         /* CONTENT */
-        .main-content { padding: 15px; max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
-        .view-section { display: none; animation: fadeIn 0.4s; }
+        .main-content { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 120px; }
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
         .view-section.active { display: block; }
-        .card { background: var(--bg-card); border-radius: var(--radius); padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        
+        .card { 
+            background: var(--bg-card); 
+            border-radius: var(--radius); 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: var(--shadow); 
+            border: 1px solid var(--wa-secondary); 
+            position: relative;
+            overflow: hidden;
+        }
         
         /* FEATURE GRID */
-        .feature-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px; margin-top: 10px; }
-        .feature-item { background: var(--bg-body); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid var(--border); transition: 0.2s; }
-        .feature-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .feature-item i { font-size: 24px; color: var(--wa-secondary); margin-bottom: 8px; }
+        .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        @media (min-width: 600px) { .feature-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .feature-item { 
+            background: var(--bg-body); 
+            padding: 20px 15px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: 1px solid var(--border); 
+            transition: 0.3s; 
+            cursor: pointer;
+        }
+        .feature-item:hover { transform: translateY(-5px); border-color: var(--wa-primary); }
+        .feature-item i { font-size: 28px; color: var(--wa-primary); margin-bottom: 12px; display: block; }
         .feature-item h4 { font-size: 14px; margin-bottom: 5px; color: var(--text-pri); }
         .feature-item p { font-size: 11px; color: var(--text-sec); line-height: 1.4; }
 
         /* GUIDE LIST */
-        .guide-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .guide-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
         .guide-item:last-child { border-bottom: none; }
-        .guide-icon { width: 40px; height: 40px; background: rgba(0, 168, 132, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--wa-primary); font-size: 18px; flex-shrink: 0; }
-        .guide-content h4 { font-size: 16px; margin-bottom: 5px; color: var(--text-pri); }
-        .guide-content p { font-size: 13px; color: var(--text-sec); line-height: 1.5; }
+        .guide-icon { 
+            width: 45px; height: 45px; 
+            background: rgba(0, 168, 132, 0.1); 
+            border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: var(--wa-primary); 
+            font-size: 20px; flex-shrink: 0; 
+        }
+        .guide-content h4 { font-size: 16px; margin-bottom: 6px; color: var(--text-pri); }
+        .guide-content p { font-size: 13px; color: var(--text-sec); line-height: 1.6; }
 
         /* BUTTONS & INPUTS */
-        .btn { padding: 10px 15px; border-radius: 20px; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--wa-primary); color: #111B21; }
-        body.dark-mode .btn-primary { color: #fff; }
+        .btn { 
+            padding: 12px 20px; 
+            border-radius: 50px; 
+            border: none; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px; 
+            font-size: 14px; 
+            transition: 0.2s; 
+            letter-spacing: 0.5px;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--wa-primary); color: #ffffff; box-shadow: 0 4px 10px rgba(0, 168, 132, 0.3); }
+        .btn-primary:hover { background: var(--wa-primary-dark); }
         .btn-success { background: var(--wa-secondary); color: #fff; }
-        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 10px rgba(234, 0, 56, 0.3); }
         .btn-outline { background: transparent; border: 1px solid var(--text-sec); color: var(--text-pri); }
-        .btn-block { width: 100%; justify-content: center; }
+        .btn-block { width: 100%; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
         
-        .form-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-pri); margin-bottom: 15px; transition: 0.3s; }
-        .form-input:focus { border-color: var(--wa-primary); box-shadow: 0 0 0 2px rgba(0, 168, 132, 0.2); }
+        .form-input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            background: var(--input-bg); 
+            color: var(--text-pri); 
+            margin-bottom: 15px; 
+            transition: 0.3s; 
+            font-size: 15px;
+        }
+        .form-input:focus { border-color: var(--wa-primary); box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.1); }
         
         /* MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-        .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border); }
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 2000; 
+            display: none; align-items: center; justify-content: center; 
+            backdrop-filter: blur(5px); 
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+        .modal-box { 
+            background: var(--bg-card); 
+            padding: 30px; 
+            border-radius: 20px; 
+            width: 90%; max-width: 420px; 
+            max-height: 90vh; overflow-y: auto; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+            border: 1px solid var(--border); 
+            animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
         /* AUTH SPECIFIC */
         .auth-header { text-align: center; margin-bottom: 25px; }
-        .auth-logo { font-size: 48px; color: var(--wa-primary); margin-bottom: 10px; }
-        .auth-title { font-size: 20px; font-weight: 600; color: var(--text-pri); }
+        .auth-logo { font-size: 50px; color: var(--wa-primary); margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(0,168,132,0.3)); }
+        .auth-wa { font-size: 35px; color: var(--wa-secondary); margin-bottom: 0px; filter: drop-shadow(0 0 10px rgba(0,168,132,0.3)); }
+        .auth-title { font-size: 22px; font-weight: 700; color: var(--text-pri); margin-bottom: 5px; }
         
         /* SLIDER CAPTCHA */
-        .slider-captcha { width: 100%; height: 50px; background: var(--bg-body); border-radius: 25px; position: relative; margin-bottom: 20px; overflow: hidden; border: 1px solid var(--border); user-select: none; }
-        .slider-text { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-sec); z-index: 1; }
-        .slider-handle { width: 50px; height: 48px; background: var(--bg-card); border-radius: 50%; position: absolute; top: 0; left: 0; cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center; box-shadow: 2px 0 5px rgba(0,0,0,0.1); transition: background 0.3s; border: 1px solid var(--border); }
+        .slider-captcha { 
+            width: 100%; height: 55px; 
+            background: var(--bg-body); 
+            border-radius: 30px; 
+            position: relative; 
+            margin-bottom: 25px; 
+            overflow: hidden; 
+            border: 1px solid var(--border); 
+            user-select: none; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .slider-text { 
+            position: absolute; width: 100%; height: 100%; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 13px; font-weight: 500;
+            color: var(--text-sec); z-index: 1; letter-spacing: 0.5px;
+        }
+        .slider-handle { 
+            width: 55px; height: 53px; 
+            background: var(--bg-card); 
+            border-radius: 50%; 
+            position: absolute; top: 0; left: 0; 
+            cursor: pointer; z-index: 2; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 2px 0 8px rgba(0,0,0,0.15); 
+            transition: background 0.3s; 
+            border: 1px solid var(--border); 
+            color: var(--text-sec);
+        }
         .slider-overlay { position: absolute; top: 0; left: 0; height: 100%; width: 0; background: var(--wa-primary); z-index: 0; opacity: 0.5; }
-        .captcha-success .slider-handle { background: var(--wa-primary); border-color: var(--wa-primary); }
+        .captcha-success .slider-handle { background: var(--wa-primary); border-color: var(--wa-primary); color: white; }
         .captcha-success .slider-overlay { width: 100% !important; transition: width 0.3s; opacity: 1; }
 
         /* TOAST */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--bg-card); color: var(--text-pri); padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 12px; min-width: 250px; border-left: 5px solid #ccc; animation: slideInRight 0.3s ease-out forwards; font-size: 14px; }
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { 
+            background: var(--bg-card); 
+            color: var(--text-pri); 
+            padding: 15px 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            display: flex; align-items: center; gap: 15px; 
+            min-width: 280px; max-width: 320px;
+            border-left: 5px solid #ccc; 
+            animation: slideInRight 0.3s ease-out forwards; 
+            font-size: 14px; font-weight: 500;
+        }
         .toast.success { border-left-color: var(--wa-secondary); }
         .toast.error { border-left-color: var(--danger); }
         
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
         @keyframes expandUp { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .spin-anim { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         
         /* BOT LIST */
-        .bot-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); transition: 0.2s; }
-        .bot-item:hover { background: rgba(0,0,0,0.02); }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; display: inline-block; margin-right: 5px; }
-        .status-online { background: #25D366; box-shadow: 0 0 5px #25D366; }
-        .pairing-code { font-family: monospace; font-size: 24px; letter-spacing: 5px; text-align: center; background: rgba(0, 168, 132, 0.1); padding: 15px; border-radius: 8px; color: var(--wa-primary); font-weight: bold; cursor: pointer; margin: 10px 0; }
+        .bot-item { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 15px; border-bottom: 1px solid var(--border); 
+            transition: 0.2s; background: var(--bg-body);
+            border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border);
+        }
+        .bot-item:hover { transform: scale(1.01); border-color: var(--wa-primary); }
+        .status-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; display: inline-block; margin-right: 8px; }
+        .status-online { background: #25D366; box-shadow: 0 0 8px #25D366; }
+        .pairing-code { 
+            font-family: monospace; font-size: 28px; letter-spacing: 6px; 
+            text-align: center; background: rgba(0, 168, 132, 0.1); 
+            padding: 20px; border-radius: 12px; 
+            color: var(--wa-primary); font-weight: bold; 
+            cursor: pointer; margin: 15px 0; border: 1px dashed var(--wa-primary);
+        }
 
         /* UTILS */
         .d-none { display: none !important; }
 
         /* LOADING SCREEN */
-        #loadingOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: #111b21; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
-        .wa-logo-icon { font-size: 80px; color: #25D366; animation: pulse 2s infinite ease-in-out; }
-        .loading-bar-container { width: 150px; height: 4px; background: #2a3942; border-radius: 4px; overflow: hidden; margin-bottom: 10px; margin-top: 20px; }
-        .loading-bar { height: 100%; width: 30%; background: #25D366; border-radius: 4px; animation: loadingProgress 1.5s infinite ease-in-out; }
-        .loading-text { color: #8696a0; font-size: 14px; font-weight: 500; }
+        #loadingOverlay { 
+            position: fixed; top:0; left:0; width:100%; height:100%; 
+            background: var(--bg-body); z-index: 9999; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            transition: opacity 0.5s ease; 
+        }
+        .wa-logo-icon { font-size: 90px; color: #25D366; margin-bottom: 20px; animation: pulse 2s infinite ease-in-out; }
+        .loading-bar-container { width: 180px; height: 5px; background: rgba(134, 150, 160, 0.3); border-radius: 5px; overflow: hidden; margin-bottom: 15px; }
+        .loading-bar { height: 100%; width: 30%; background: #25D366; border-radius: 5px; animation: loadingProgress 1.5s infinite ease-in-out; }
+        .loading-text { color: var(--text-sec); font-size: 15px; font-weight: 500; letter-spacing: 0.5px; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes loadingProgress { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
 
         /* WA PROFILE CHECKER STYLE */
-        .wa-profile-header { display: flex; flex-direction: column; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--border); position: relative; }
-        .wa-cover-area { width:100%; height: 100px; position:absolute; top:0; left:0; z-index:0; opacity:0.1; background:var(--wa-primary); }
-        .wa-profile-pic { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 4px solid var(--bg-card); background: #ccc; z-index:1; cursor:pointer; }
-        .wa-list-item { display: flex; padding: 15px; border-bottom: 1px solid var(--border); gap: 15px; }
+        .wa-profile-header { display: flex; flex-direction: column; align-items: center; padding: 25px 0; border-bottom: 1px solid var(--border); position: relative; }
+        .wa-cover-area { width:100%; height: 120px; position:absolute; top:0; left:0; z-index:0; opacity:0.1; background:var(--wa-primary); }
+        .wa-profile-pic { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 5px solid var(--bg-card); background: #ccc; z-index:1; cursor:pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .wa-list-item { display: flex; padding: 18px; border-bottom: 1px solid var(--border); gap: 18px; align-items: center; }
+        .wa-list-item i { width: 20px; text-align: center; color: var(--text-sec); }
     </style>
 </head>
 <body class="dark-mode">
@@ -192,14 +373,12 @@
 
     <!-- LOADING SCREEN -->
     <div id="loadingOverlay">
-        <div class="wa-logo-wrapper">
-            <i class="fab fa-whatsapp wa-logo-icon"></i>
-        </div>
+        <i class="fab fa-whatsapp wa-logo-icon"></i>
         <div class="loading-bar-container">
             <div class="loading-bar"></div>
         </div>
         <p class="loading-text" id="loadingText">Menghubungkan...</p>
-        <div style="position: absolute; bottom: 30px; color: #667781; font-size: 12px;">
+        <div style="position: absolute; bottom: 40px; color: white; font-size: 15px; font-weight: 500;">
             <i class="fab fa-meta"></i> Meta
         </div>
     </div>
@@ -210,8 +389,8 @@
             <div id="loginView">
                 <div class="auth-header">
                     <i class="fab fa-whatsapp auth-logo"></i>
-                    <h3 class="auth-title">WhatsApp Manager</h3>
-                    <p style="font-size:13px; color:var(--text-sec)">Kelola Bot dengan Mudah</p>
+                    <h3 class="auth-title">Selamat Datang</h3>
+                    <p style="font-size:14px; color:var(--text-sec)">Masuk untuk mengelola fitur whatsapp</p>
                 </div>
                 
                 <!-- NEON LINE LOGIN -->
@@ -222,33 +401,42 @@
                 
                 <div class="slider-captcha" id="captchaContainer">
                     <div class="slider-overlay" id="sliderOverlay"></div>
-                    <div class="slider-text" id="sliderText">Geser untuk Verifikasi</div>
-                    <div class="slider-handle" id="sliderHandle"><i class="fas fa-arrow-right"></i></div>
+                    <div class="slider-text" id="sliderText">Geser tombol ke kanan <i class="fas fa-arrow-right" style="margin-left:5px"></i></div>
+                    <div class="slider-handle" id="sliderHandle"><i class="fas fa-chevron-right"></i></div>
                 </div>
 
-                <button onclick="login()" id="btnLogin" class="btn btn-primary btn-block" disabled>MASUK</button>
-                <div style="text-align:center; margin-top:20px; font-size:13px">
-                    <span style="color:var(--wa-primary); cursor:pointer" onclick="switchAuth('reg')">Buat Akun</span> | 
-                    <span style="color:var(--text-sec); cursor:pointer" onclick="switchAuth('reset')">Lupa Password</span>
+                <button onclick="login()" id="btnLogin" class="btn btn-primary btn-block" disabled>MASUK SEKARANG</button>
+                <div style="text-align:center; margin-top:25px; font-size:13px">
+                    <span style="color:var(--text-sec)">Belum punya akun?</span> <span style="color:var(--wa-primary); cursor:pointer; font-weight:bold" onclick="switchAuth('reg')">Daftar</span>
+                    <br><br>
+                    <span style="color:var(--text-sec); cursor:pointer; text-decoration:underline" onclick="switchAuth('reset')">Lupa Password?</span>
                 </div>
             </div>
 
-            <!-- REGISTRATION & RESET (Hidden by default) -->
+            <!-- REGISTRATION -->
             <div id="regForm" class="d-none">
-                <h3 style="text-align:center; margin-bottom:20px">Daftar Akun</h3>
+                <div class="auth-header">
+                     <i class="fas fa-user-plus auth-logo"></i>
+                    <h3 class="auth-title">Buat Akun</h3>
+                    <p style="font-size:14px; color:var(--text-sec)">Isi form di bawah ini</p>
+                </div>
                 <input id="ru" class="form-input" placeholder="Username Baru">
                 <input type="password" id="rp" class="form-input" placeholder="Password Baru">
-                <button onclick="reg()" class="btn btn-success btn-block">DAFTAR</button>
-                <div style="text-align:center; margin-top:15px; font-size:13px; color:var(--wa-primary); cursor:pointer" onclick="switchAuth('login')">Kembali ke Login</div>
+                <button onclick="reg()" class="btn btn-success btn-block">DAFTAR AKUN</button>
+                <div style="text-align:center; margin-top:20px; font-size:13px; color:var(--text-sec); cursor:pointer" onclick="switchAuth('login')"><i class="fas fa-arrow-left"></i> Kembali ke Login</div>
             </div>
             
+            <!-- RESET PASSWORD -->
              <div id="resetForm" class="d-none">
-                <h3 style="text-align:center; margin-bottom:20px">Reset Password</h3>
+                <div class="auth-header">
+                     <i class="fas fa-lock-open auth-logo" style="color:var(--danger)"></i>
+                    <h3 class="auth-title">Reset Password</h3>
+                </div>
                 <input id="rUser" class="form-input" placeholder="Username">
-                <input id="rPhone" class="form-input" placeholder="Nomor Bot (628xxx)">
+                <input id="rPhone" class="form-input" placeholder="Nomor Bot (Contoh: 628xxx)">
                 <input type="password" id="rNewPass" class="form-input" placeholder="Password Baru">
-                <button onclick="resetPass()" class="btn btn-danger btn-block">RESET</button>
-                <div style="text-align:center; margin-top:15px; font-size:13px; color:var(--wa-primary); cursor:pointer" onclick="switchAuth('login')">Kembali</div>
+                <button onclick="resetPass()" class="btn btn-danger btn-block">RESET PASSWORD</button>
+                <div style="text-align:center; margin-top:20px; font-size:13px; color:var(--text-sec); cursor:pointer" onclick="switchAuth('login')"><i class="fas fa-arrow-left"></i> Kembali</div>
             </div>
         </div>
     </div>
@@ -256,19 +444,21 @@
     <!-- ADD BOT MODAL -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-box">
-            <h3 style="margin-bottom:15px">Tambah WhatsApp</h3>
+            <h3 style="margin-bottom:20px; text-align:center"><i class="fab fa-whatsapp" style="color:var(--wa-primary)"></i> Tautkan WhatsApp</h3>
             <div id="addStep1">
-                <input id="botPhone" type="tel" class="form-input" placeholder="Format: 628xxxxx">
-                <div style="display:flex; gap:10px">
+                <p style="font-size:13px; color:var(--text-sec); margin-bottom:15px; text-align:center">Masukkan nomor bot yang ingin dijadikan server.</p>
+                <input id="botPhone" type="tel" class="form-input" placeholder="Format: (+62xxxx)" style="text-align:center; font-size:18px">
+                <div style="display:flex; gap:10px; margin-top:10px">
                     <button onclick="reqPair()" class="btn btn-success btn-block">Dapatkan Kode</button>
                     <button onclick="closeModal('addModal')" class="btn btn-outline">Batal</button>
                 </div>
             </div>
             <div id="addStep2" class="d-none" style="text-align:center">
-                <p>Salin kode ini ke WhatsApp > Perangkat Tertaut:</p>
+                <p style="color:var(--text-pri); font-weight:500">Buka WhatsApp > Perangkat Tertaut > Tautkan Perangkat</p>
+                <p style="font-size:12px; color:var(--text-sec); margin-top:5px">Masukkan kode di bawah ini:</p>
                 <div id="codeDisplay" class="pairing-code" onclick="copyCode()">...</div>
-                <div id="pairStatus" style="font-size:12px; color:var(--text-sec)">Menunggu...</div>
-                <button onclick="closeModal('addModal')" class="btn btn-outline btn-block" style="margin-top:15px">Tutup</button>
+                <div id="pairStatus" style="font-size:13px; color:var(--text-sec); margin-bottom:15px"><i class="fas fa-spinner fa-spin"></i> Menunggu koneksi...</div>
+                <button onclick="closeModal('addModal')" class="btn btn-outline btn-block">Tutup</button>
             </div>
         </div>
     </div>
@@ -276,10 +466,14 @@
     <!-- MAIN APP -->
     <div id="appContainer" class="d-none">
         <div class="header">
-            <h3><div class="header-logo"><i class="fab fa-whatsapp"></i> WA Manager</div></h3>
+            <div class="header-logo"><i class="fab fa-whatsapp auth-wa"></i> WhatsApp</div>
             <div class="header-actions">
+                <!-- Theme Toggle Moved Here -->
+                <button class="header-btn" onclick="toggleDarkMode()" title="Ganti Tema" id="themeToggleBtn">
+                    <i class="fas fa-sun"></i>
+                </button>
                 <button class="header-btn" onclick="manualRefresh()" title="Refresh"><i class="fas fa-sync-alt" id="refreshIcon"></i></button>
-                <button class="header-btn" onclick="logout()" title="Keluar"><i class="fas fa-sign-out-alt"></i></button>
+                <button class="header-btn" onclick="logout()" title="Keluar" style="color:#ff6b6b"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
 
@@ -287,92 +481,93 @@
             <!-- DASHBOARD HOME -->
             <div id="view-dash" class="view-section active">
                 <div class="card">
-                    <i class="fas fa-server"> INFO Server</i>
+                    <h3 style="margin-bottom:10px">💀 INFO : <a style="color:var(--wa-primary)" id="p_name" style="font-size:24px">-</a> </h3>
                     
                     <!-- NEON LINE STATUS -->
                     <div class="neon-line"></div>
                     
-                    <p style="font-size:13px; color:var(--text-sec); word-break:break-all">
-                        <span id="connectionDot" style="color:red; margin-right:5px">●</span> 
-                        <span id="apiUrlDisplay">Menunggu Refresh...</span>
-                    </p>
-                    <div style="display:flex; justify-content:space-between; margin-top:20px">
-                        <div style="text-align:center">
-                            <h2 id="totalBots">0</h2><span style="font-size:12px">Total Bot</span>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; background:var(--bg-body); padding:10px 15px; border-radius:10px; border:1px solid var(--wa-secondary)">
+                         <span style="font-size:13px; color:var(--text-sec);">API Connection:</span>
+                         <span id="apiUrlDisplay" style="font-size:13px; font-weight:bold"><i class="fas fa-circle-notch fa-spin"></i> Loading...</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; gap:10px">
+                        <div style="text-align:center; flex:1; background:var(--bg-body); padding:15px 5px; border-radius:12px; border:1px solid var(--wa-secondary)">
+                            <h2 id="totalBots" style="font-size:24px">0</h2><span style="font-size:11px; color:var(--text-sec)">TOTAL</span>
                         </div>
-                        <div style="text-align:center">
-                            <h2 id="activeBots" style="color:var(--wa-secondary)">0</h2><span style="font-size:12px">Aktif</span>
+                        <div style="text-align:center; flex:1; background:var(--bg-body); padding:15px 5px; border-radius:12px; border:1px solid var(--wa-secondary)">
+                            <h2 id="activeBots" style="font-size:24px">0</h2><span style="font-size:11px; color:var(--text-sec)">AKTIF</span>
                         </div>
-                        <div style="text-align:center">
-                            <h2 id="myBots">0</h2><span style="font-size:12px">Milik Saya</span>
+                        <div style="text-align:center; flex:1; background:var(--bg-body); padding:15px 5px; border-radius:12px; border:1px solid var(--wa-secondary)">
+                            <h2 id="myBots" style="font-size:24px">0</h2><span style="font-size:11px; color:var(--text-sec)">MILIKMU</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- INFO KEGUNAAN (Updated) -->
+                <!-- FITUR GRID -->
                 <div class="card">
-                    <h3><i class="fas fa-star"></i> Fitur Tersedia</h3>
-                    <p style="font-size:13px; color:var(--text-sec); margin-top:5px; margin-bottom:15px;">Bot ini dilengkapi dengan berbagai fitur otomatis untuk mempermudah Anda.</p>
+                    <h3><i class="fas fa-bolt" style="color:#FFC107"></i> AKSES CEPAT</h3>
+                    <p style="font-size:13px; color:var(--text-sec); margin-top:5px;">Akses fitur bot secara instan.</p>
                     <div class="feature-grid">
-                        <div class="feature-item">
-                            <i class="fas fa-eye-slash"></i>
-                            <h4>RVO & Status</h4>
-                            <p>Simpan pesan sekali lihat & Story WA.</p>
+                        <div class="feature-item" onclick="view('bots')">
+                            <i class="fas fa-robot"></i>
+                            <h4>Kelola Bot</h4>
+                            <p>Tambah/Hapus sesi</p>
                         </div>
-                        <div class="feature-item">
+                        <div class="feature-item" onclick="view('dl')">
                             <i class="fas fa-cloud-download-alt"></i>
-                            <h4>Downloader</h4>
-                            <p>Download video dari TikTok, IG, YT.</p>
+                            <h4>Download</h4>
+                            <p>TikTok/IG/YT</p>
                         </div>
-                        <div class="feature-item">
+                        <div class="feature-item" onclick="view('check')">
                             <i class="fas fa-search-location"></i>
-                            <h4>Cek Nomor</h4>
-                            <p>Intip info detail nomor WhatsApp.</p>
+                            <h4>Stalking</h4>
+                            <p>Cek info nomor</p>
                         </div>
-                        <div class="feature-item">
+                        <div class="feature-item" onclick="view('guide')">
                             <i class="fas fa-shield-alt"></i>
                             <h4>Proteksi</h4>
-                            <p>Anti hapus pesan & Anti Banned.</p>
+                            <p>Anti Delete/ViewOnce</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- GUIDE PAGE (New) -->
+            <!-- GUIDE PAGE -->
             <div id="view-guide" class="view-section">
                 <div class="card">
-                    <h3><i class="fas fa-book"></i> Penggunaan fitur</h3>
-                    <p style="font-size:13px; color:var(--text-sec); margin-bottom:15px;">Berikut adalah daftar perintah dan fitur otomatis bot:</p>
+                    <h3><i class="fas fa-book-open"></i> Panduan Fitur</h3>
+                    <p style="font-size:13px; color:var(--text-sec); margin-bottom:20px;">Cara menggunakan fitur otomatis bot:</p>
                     
                     <div class="guide-item">
                         <div class="guide-icon"><i class="fas fa-eye"></i></div>
                         <div class="guide-content">
                             <h4>RVO (Read View Once)</h4>
-                            <p>Ingin menyimpan foto/video sekali lihat? Cukup <strong>balas pesan tersebut</strong> dengan mengetik titik dua <code>..</code>. Bot akan mengirim media ke chat pribadi Anda.</p>
+                            <p>Balas pesan sekali lihat dengan mengetik titik dua <code>..</code>. Bot akan mengirim isinya ke chat pribadi Anda.</p>
                         </div>
                     </div>
 
                     <div class="guide-item">
                         <div class="guide-icon"><i class="fas fa-circle-notch"></i></div>
                         <div class="guide-content">
-                            <h4>SW (Status Saver)</h4>
-                            <p>Suka dengan status teman? <strong>Balas story/status</strong> mereka dengan mengetik titik dua <code>..</code>. Bot akan mengirim status tersebut secara instan.</p>
+                            <h4>SW Saver</h4>
+                            <p>Balas status/story WhatsApp teman dengan <code>..</code> untuk menyimpannya ke galeri.</p>
                         </div>
                     </div>
 
                     <div class="guide-item">
                         <div class="guide-icon"><i class="fas fa-history"></i></div>
                         <div class="guide-content">
-                            <h4>AHP (Anti Hapus Pesan)</h4>
-                            <p>Fitur otomatis. Jika ada teman yang menghapus/menarik pesan, bot akan mendeteksinya dan <strong>mengirim kembali pesan yang dihapus</strong> ke chat Anda.</p>
+                            <h4>Anti Hapus Pesan</h4>
+                            <p>Otomatis aktif. Bot akan mengirim ulang pesan yang dihapus teman ke chat Anda.</p>
                         </div>
                     </div>
 
                     <div class="guide-item">
                         <div class="guide-icon"><i class="fas fa-user-shield"></i></div>
                         <div class="guide-content">
-                            <h4>AB (Anti Banned)</h4>
-                            <p>Sistem keamanan yang bekerja di latar belakang untuk meminimalisir risiko pemblokiran nomor oleh WhatsApp dengan algoritma human-behavior.</p>
+                            <h4>Anti Banned System</h4>
+                            <p>Algoritma "Human Behavior" untuk meminimalisir risiko blokir dari WhatsApp.</p>
                         </div>
                     </div>
                 </div>
@@ -381,12 +576,14 @@
             <!-- BOT LIST VIEW -->
             <div id="view-bots" class="view-section">
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
-                        <h3><i class="fas fa-list"></i> Daftar Bot</h3>
-                        <button onclick="openModal('addModal')" class="btn btn-primary" style="font-size:12px"><i class="fas fa-plus"></i> Baru</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+                        <h3><i class="fas fa-list-ul"></i> Daftar Bot</h3>
+                        <button onclick="openModal('addModal')" class="btn btn-primary" style="font-size:12px; padding: 8px 15px;"><i class="fas fa-plus"></i> Tambah Baru</button>
                     </div>
                     <div id="botListContainer">
-                        <div style="text-align:center; padding:20px; color:var(--text-sec)">Memuat data...</div>
+                        <div style="text-align:center; padding:40px; color:var(--text-sec)">
+                            <i class="fas fa-circle-notch fa-spin" style="font-size:24px"></i><br><br>Memuat data...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -395,38 +592,51 @@
             <div id="view-dl" class="view-section">
                 <div class="card">
                     <h3><i class="fas fa-download"></i> Media Downloader</h3>
-                    <input id="dlUrl" class="form-input" placeholder="Tempel Link TikTok / IG / FB / YT..." style="margin-top:15px">
+                    <p style="font-size:13px; color:var(--text-sec); margin-bottom:15px">Support: TikTok (No WM), Instagram, YouTube, Facebook.</p>
+                    <input id="dlUrl" class="form-input" placeholder="Tempel Link di sini..." style="padding:15px">
                     <div style="display:flex; gap:10px">
-                        <button onclick="doDownload('mp4')" class="btn btn-primary btn-block" id="btnMp4">Video</button>
-                        <button onclick="doDownload('mp3')" class="btn btn-success btn-block" id="btnMp3">Musik</button>
+                        <button onclick="doDownload('mp4')" class="btn btn-primary btn-block" id="btnMp4"><i class="fas fa-video"></i> Video</button>
+                        <button onclick="doDownload('mp3')" class="btn btn-success btn-block" id="btnMp3"><i class="fas fa-music"></i> Audio</button>
                     </div>
-                    <div id="dlResult" style="margin-top:15px; text-align:center"></div>
+                    <div id="dlResult" style="margin-top:20px; text-align:center"></div>
                 </div>
             </div>
 
             <!-- CHECK NUMBER -->
             <div id="view-check" class="view-section">
                 <div class="card">
-                    <h3><i class="fas fa-search"></i> Cek Nomor</h3>
-                    <div style="display:flex; gap:10px">
-                        <input id="checkPhone" class="form-input" placeholder="628xxxx" style="margin-bottom:0">
-                        <button onclick="doCheck()" class="btn btn-primary" id="btnCheck" style="border-radius:8px"><i class="fas fa-arrow-right"></i></button>
+                    <h3><i class="fas fa-search"></i> Cek Informasi Nomor</h3>
+                    <div style="display:flex; gap:10px; margin-top:15px">
+                        <input id="checkPhone" class="form-input" placeholder="Contoh: 628123xxxx" style="margin-bottom:0">
+                        <button onclick="doCheck()" class="btn btn-primary" id="btnCheck" style="border-radius:12px; padding:0 20px"><i class="fas fa-arrow-right"></i></button>
                     </div>
-                    <p style="font-size:11px; color:var(--text-sec); margin-top:5px">*Cek status online, profil, & info bisnis.</p>
+                    <p style="font-size:11px; color:var(--text-sec); margin-top:8px; margin-left:5px">*Cek status online, foto profil HD, & info bio.</p>
                 </div>
                 <div id="checkResult"></div>
             </div>
 
             <!-- PROFILE -->
             <div id="view-profile" class="view-section">
-                <div class="card" style="text-align:center">
-                    <img id="p_img" src="" style="width:100px; height:100px; border-radius:50%; margin-bottom:10px; border:2px solid var(--wa-primary)">
-                    <h2 id="p_name">-</h2>
-                    <p id="p_role" style="color:var(--text-sec)">User</p>
-                    <hr style="border:0; border-top:1px solid var(--border); margin:15px 0">
-                    <div style="text-align:left; font-size:14px">
-                        <p style="margin-bottom:10px"><strong><i class="fas fa-id-card"></i> ID:</strong> <span id="p_uid">-</span></p>
-                        <p><strong><i class="fas fa-calendar"></i> Join:</strong> <span id="p_join">-</span></p>
+                <div class="card" style="text-align:center; padding-top:40px">
+                    <img id="p_img" src="" style="width:120px; height:120px; border-radius:50%; margin-bottom:15px; border:4px solid var(--wa-primary); box-shadow: 0 5px 15px rgba(0,0,0,0.2)">
+                    <h2 id="p_name" style="font-size:24px">-</h2>
+                    <span id="p_role" style="background:var(--wa-secondary); color:#fff; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:bold; letter-spacing:1px; margin-top:5px; display:inline-block">USER</span>
+                    
+                    <div style="text-align:left; margin-top:30px; background:var(--bg-body); border-radius:12px; overflow:hidden; border:1px solid var(--border)">
+                        <div class="wa-list-item">
+                            <i class="fas fa-fingerprint"></i>
+                            <div>
+                                <div style="font-size:12px; color:var(--text-sec)">User ID</div>
+                                <div id="p_uid" style="font-weight:500">-</div>
+                            </div>
+                        </div>
+                        <div class="wa-list-item" style="border-bottom:none">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div>
+                                <div style="font-size:12px; color:var(--text-sec)">Terdaftar Sejak</div>
+                                <div id="p_join" style="font-weight:500">-</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -434,16 +644,18 @@
             <!-- DONATION -->
             <div id="view-donate" class="view-section">
                 <div class="card" style="text-align:center">
-                    <h3><i class="fas fa-hand-holding-heart"></i> Dukungan Donasi</h3>
-                    <p style="color:var(--text-sec); font-size:13px; margin:10px 0;">Dukungan Anda membantu server tetap online.</p>
+                    <h3><i class="fas fa-heart" style="color:#e91e63"></i> Support Developer</h3>
+                    <p style="color:var(--text-sec); font-size:13px; margin:10px 0 20px 0;">Server butuh biaya sewa agar tetap online 24 jam. Bantuan Anda sangat berarti.</p>
                     
-                    <a href="https://ibb.co.com/n83XRHvP"><img src="https://i.ibb.co.com/Qj8WX2RD/1764589851057.png" alt="1764589851057" border="0"></a>
+                    <div style="background:#fff; padding:15px; border-radius:12px; display:inline-block; margin-bottom:15px; border:1px solid #ddd">
+                        <a href="https://ibb.co.com/n83XRHvP"><img src="https://i.ibb.co.com/Qj8WX2RD/1764589851057.png" alt="QRIS" style="width:100%; max-width:200px; display:block"></a>
+                    </div>
                     
-                    <div style="background:rgba(0,168,132,0.1); padding:15px; border-radius:8px; margin-top:10px;">
+                    <div style="background:rgba(0,168,132,0.1); padding:15px; border-radius:12px; margin-top:10px; border-left: 4px solid var(--wa-primary)">
                         <p style="font-style:italic; font-size:14px; color:var(--text-pri)">"Sedekah tidak akan mengurangi harta, justru akan menambah keberkahan."</p>
                     </div>
                     
-                    <button class="btn btn-outline" style="margin-top:15px" onclick="window.open('https://i.ibb.co.com/k63LMRfm/1764589851057.png')">Saweria / Trakteer</button>
+                    <button class="btn btn-outline btn-block" style="margin-top:20px" onclick="window.open('https://i.ibb.co.com/k63LMRfm/1764589851057.png')"><i class="fas fa-external-link-alt"></i> Buka Link Saweria / Trakteer</button>
                 </div>
             </div>
         </div>
@@ -452,13 +664,13 @@
         <button class="floating-menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
         <div class="floating-menu" id="floatingMenu">
             <div class="menu-item active" onclick="view('dash')"><i class="fas fa-home"></i> Dashboard</div>            
-            <div class="menu-item" onclick="view('bots')"><i class="fas fa-robot"></i> Tambah Bot</div>
+            <div class="menu-item" onclick="view('bots')"><i class="fas fa-robot"></i> Bot Manager</div>
             <div class="menu-item" onclick="view('dl')"><i class="fas fa-cloud-download-alt"></i> Downloader</div>
-            <div class="menu-item" onclick="view('check')"><i class="fas fa-search-location"></i> Cek Nomor</div>
-            <div class="menu-item" onclick="view('profile')"><i class="fas fa-user-circle"></i> Profil</div>
+            <div class="menu-item" onclick="view('check')"><i class="fas fa-search"></i> Cek Nomor</div>
+            <div class="menu-item" onclick="view('profile')"><i class="fas fa-user-circle"></i> Profil Saya</div>
             <div class="menu-item" onclick="view('guide')"><i class="fas fa-book"></i> Panduan</div>
             <div class="menu-item" onclick="view('donate')"><i class="fas fa-donate"></i> Donasi</div>
-            <div class="menu-item" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> Ganti Tema</div>
+            <!-- Theme toggle removed from here -->
         </div>
     </div>
 
@@ -477,6 +689,11 @@
         let isCaptchaVerified = false;
 
         async function init() {
+            // Set initial theme icon
+            const isDark = document.body.classList.contains('dark-mode');
+            const themeBtn = document.getElementById('themeToggleBtn');
+            if(themeBtn) themeBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
             initSliderCaptcha();
             showSplashScreen("Menghubungkan...");
             await checkServerUrl();
@@ -487,13 +704,15 @@
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+            let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+            toast.innerHTML = `<i class="fas ${icon}" style="font-size:20px"></i> <span>${message}</span>`;
             container.appendChild(toast);
+            
+            // Auto remove
             setTimeout(() => {
                 toast.style.animation = 'fadeOutRight 0.3s ease-in forwards';
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 3500);
         }
 
         // --- CAPTCHA ---
@@ -542,6 +761,7 @@
                 handle.style.left = (container.offsetWidth - handle.offsetWidth) + 'px';
                 handle.innerHTML = '<i class="fas fa-check"></i>';
                 text.innerText = "Terverifikasi";
+                text.style.color = "white";
                 document.getElementById('btnLogin').disabled = false;
             }
 
@@ -562,15 +782,15 @@
             const btn = document.getElementById('btnLogin');
             container.classList.remove('captcha-success');
             handle.style.left = '0';
-            handle.innerHTML = '<i class="fas fa-arrow-right"></i>';
+            handle.innerHTML = '<i class="fas fa-chevron-right"></i>';
             overlay.style.width = '0';
-            text.innerText = "Geser untuk Verifikasi";
+            text.innerText = "Geser tombol ke kanan";
+            text.style.color = "var(--text-sec)";
             btn.disabled = true;
         }
 
         // --- CONNECTIVITY ---
         async function checkServerUrl() {
-            const dot = document.getElementById('connectionDot');
             const statusText = document.getElementById('apiUrlDisplay');
 
             try {
@@ -584,6 +804,7 @@
                 if (!newUrl.startsWith('http')) newUrl = 'http://' + newUrl;
                 API_URL = newUrl;
 
+                // Ping Check
                 const controller = new AbortController();
                 setTimeout(() => controller.abort(), 5000); 
                 const ping = await fetch(API_URL + '/', { method: 'GET', mode: 'cors', signal: controller.signal });
@@ -591,11 +812,8 @@
                 if (ping.ok || ping.status === 200 || ping.status === 404) {
                     isConnected = true;
                     hideSplashScreen();
-                    if(dot) {
-                        dot.style.color = "#25D366";
-                        dot.style.textShadow = "0 0 5px #25D366";
-                        statusText.innerText = " Server Online";
-                        statusText.style.color = "var(--text-pri)";
+                    if(statusText) {
+                        statusText.innerHTML = '<span style="color:#25D366"><i class="fas fa-circle"></i> Online</span>';
                     }
                 } else throw new Error("Ping status: " + ping.status);
 
@@ -603,14 +821,12 @@
                 console.log("Connect Error:", e.message);
                 isConnected = false;
                 if (!isAppReady) {
-                    showSplashScreen("Maintenance");
-                    document.getElementById('loadingText').classList.add('error');
+                    showSplashScreen("Maintenance Mode");
+                    document.getElementById('loadingText').innerText = "Server Offline";
+                    document.getElementById('loadingText').style.color = "var(--danger)";
                 } else {
-                    if(dot) {
-                        dot.style.color = "#FF3B30";
-                        dot.style.textShadow = "none";
-                        statusText.innerText = "Server Offline";
-                        statusText.style.color = "#FF3B30";
+                    if(statusText) {
+                        statusText.innerHTML = '<span style="color:var(--danger)"><i class="fas fa-circle"></i> Offline</span>';
                     }
                 }
             }
@@ -628,7 +844,7 @@
                 isAppReady = true;
                 if (!TOKEN) document.getElementById('authModal').style.display = 'flex';
                 else checkAuthState();
-                document.getElementById('loadingText').innerText = "Terhubung";
+                document.getElementById('loadingText').innerText = "Terhubung!";
                 setTimeout(() => { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 500); }, 500);
             }
         }
@@ -641,63 +857,103 @@
 
         async function api(path, method = 'GET', body = null) {
             if (!API_URL || !isConnected) return { success: false, message: 'Server Offline' };
+            
             const opts = { method, headers: { 'Content-Type': 'application/json' } };
             if (TOKEN) opts.headers['Authorization'] = 'Bearer ' + TOKEN;
             if (body) opts.body = JSON.stringify(body);
+            
             try {
                 const res = await fetch(API_URL + path, opts);
-                if (res.status === 401) { logout(); return { success: false, message: 'Sesi habis.' }; }
+                
+                // === PERBAIKAN DI SINI ===
+                // Jika status 401 (Unauthorized) DAN bukan sedang mencoba login, baru logout.
+                // Jika sedang login (/api/login) dan error 401 (salah pass), biarkan lewat agar ditangani fungsi login().
+                if (res.status === 401 && path !== '/api/login') { 
+                    logout(); 
+                    return { success: false, message: 'Sesi habis.' }; 
+                }
+                
                 return await res.json();
-            } catch (e) { return { success: false, message: 'Gagal menghubungi server' }; }
+            } catch (e) { 
+                return { success: false, message: 'Gagal menghubungi server' }; 
+            }
         }
 
-        // --- AUTH ---
+        // --- AUTH & LOGIN LOGIC (IMPROVED) ---
         async function login() {
-            if (!isCaptchaVerified) return showToast("Verifikasi captcha dulu!", "error");
+            if (!isCaptchaVerified) return showToast("Selesaikan verifikasi captcha!", "error");
+            
             const btn = document.getElementById('btnLogin');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...'; btn.disabled = true;
             
-            const u = document.getElementById('u').value;
-            const p = document.getElementById('p').value;
+            const u = document.getElementById('u').value.trim();
+            const p = document.getElementById('p').value.trim();
             
             if(!u || !p) {
-                showToast("Isi semua data!", "error");
+                showToast("Username dan Password wajib diisi!", "error");
                 btn.innerHTML = originalText; btn.disabled = false;
                 return;
             }
 
             if (!isConnected) await checkServerUrl();
+            
+            // Call API
             const res = await api('/api/login', 'POST', {user: u, pass: p});
             btn.innerHTML = originalText; btn.disabled = false;
 
             if (res.success) {
+                // SUCCESS
                 TOKEN = res.token;
                 localStorage.setItem('auth_token', TOKEN);
-                showToast("Selamat Datang!", "success");
+                showToast("Login Berhasil!", "success");
                 checkAuthState(); 
             } else {
-                showToast(res.message || "Login Gagal", "error");
-                resetCaptcha();
+                // ERROR HANDLING LOGIC
+                // Menangani berbagai kemungkinan pesan error dari server
+                const msg = (res.message || "").toLowerCase();
+                
+                if (msg.includes("password") || msg.includes("salah") || msg.includes("invalid")) {
+                    showToast("Password yang Anda masukkan salah!", "error");
+                    document.getElementById('p').value = ""; // Clear password field
+                    document.getElementById('p').focus();
+                } else if (msg.includes("user") || msg.includes("not found") || msg.includes("tidak ditemukan")) {
+                    showToast("Akun tidak ditemukan. Silakan daftar dulu.", "error");
+                    document.getElementById('u').focus();
+                } else {
+                    showToast(res.message || "Terjadi kesalahan login", "error");
+                }
+                
+                resetCaptcha(); // Wajib reset captcha setelah gagal
             }
         }
 
         async function reg() {
             const u = document.getElementById('ru').value;
             const p = document.getElementById('rp').value;
-            if(!u || !p) return showToast("Isi lengkap!", "error");
+            if(!u || !p) return showToast("Form tidak boleh kosong!", "error");
+            
             const res = await api('/api/register', 'POST', {user: u, pass: p});
-            if (res.success) { showToast('Berhasil! Silakan login.', 'success'); switchAuth('login'); }
-            else showToast(res.message, 'error');
+            if (res.success) { 
+                showToast('Pendaftaran Berhasil! Silakan Login.', 'success'); 
+                switchAuth('login'); 
+            } else {
+                showToast(res.message, 'error');
+            }
         }
 
         async function resetPass() {
             const u = document.getElementById('rUser').value;
             const ph = document.getElementById('rPhone').value;
             const np = document.getElementById('rNewPass').value;
+            
             const res = await api('/api/reset-password', 'POST', {user: u, phone: ph, newPass: np});
-            if (res.success) { showToast('Password direset!', 'success'); switchAuth('login'); }
-            else showToast(res.message, 'error');
+            if (res.success) { 
+                showToast('Password berhasil diubah!', 'success'); 
+                switchAuth('login'); 
+            } else {
+                showToast(res.message, 'error');
+            }
         }
 
         function logout() { localStorage.removeItem('auth_token'); location.reload(); }
@@ -709,6 +965,7 @@
             await checkServerUrl(); 
             if (isConnected && TOKEN) await loadData(); 
             setTimeout(() => icon.classList.remove('spin-anim'), 1000);
+            showToast('Data diperbarui', 'success');
         }
 
         async function loadData() {
@@ -724,7 +981,11 @@
             document.getElementById('myBots').innerText = mySessions.length;
 
             container.innerHTML = '';
-            if(mySessions.length === 0) container.innerHTML = '<p style="text-align:center;color:var(--text-sec);font-size:12px;padding:20px;">Belum ada bot terhubung.</p>';
+            if(mySessions.length === 0) container.innerHTML = `
+                <div style="text-align:center; padding:30px; color:var(--text-sec)">
+                    <i class="fas fa-robot" style="font-size:40px; margin-bottom:10px; opacity:0.5"></i>
+                    <p>Belum ada bot terhubung.</p>
+                </div>`;
 
             mySessions.forEach(s => {
                 const isActive = d.activeBots.includes(s);
@@ -732,18 +993,18 @@
                 const html = `
                 <div class="bot-item">
                     <div>
-                        <div style="font-weight:bold; font-size:15px; display:flex; align-items:center;">
+                        <div style="font-weight:bold; font-size:16px; display:flex; align-items:center;">
                             <span class="status-dot ${isActive?'status-online':''}"></span> +${s}
                         </div>
-                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px"><i class="fas fa-user"></i> ${meta.owner}</div>
+                        <div style="font-size:12px; color:var(--text-sec); margin-top:4px"><i class="fas fa-user-circle"></i> ${meta.owner}</div>
                     </div>
                     <div style="display:flex; gap:8px">
                         ${isActive 
-                            ? `<button onclick="action('${s}','stop')" class="btn btn-outline" style="padding:5px 10px; font-size:11px"><i class="fas fa-stop"></i></button>
-                               <button onclick="action('${s}','restart')" class="btn btn-outline" style="padding:5px 10px; font-size:11px"><i class="fas fa-redo"></i></button>`
-                            : `<button onclick="action('${s}','start')" class="btn btn-success" style="padding:5px 10px; font-size:11px"><i class="fas fa-play"></i> Start</button>`
+                            ? `<button onclick="action('${s}','stop')" class="btn btn-outline" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-stop"></i></button>
+                               <button onclick="action('${s}','restart')" class="btn btn-outline" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-sync"></i></button>`
+                            : `<button onclick="action('${s}','start')" class="btn btn-success" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-play"></i> Start</button>`
                         }
-                        ${d.role === 'admin' ? `<button onclick="action('${s}','delete')" class="btn btn-danger" style="padding:5px 10px; font-size:11px"><i class="fas fa-trash"></i></button>` : ''}
+                        ${d.role === 'admin' ? `<button onclick="action('${s}','delete')" class="btn btn-danger" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 </div>`;
                 container.innerHTML += html;
@@ -753,14 +1014,14 @@
         }
 
         async function action(ph, act) {
-            if(act === 'delete' && !confirm('Yakin hapus bot ini?')) return;
+            if(act === 'delete' && !confirm('Yakin ingin menghapus bot ini dari server?')) return;
             const res = await api(`/api/${act}/${ph}`, 'POST');
             if(res.success) { showToast('Berhasil: ' + act, 'success'); loadData(); } else showToast('Gagal: ' + (res.message || 'Error'), 'error');
         }
 
         async function reqPair() {
             const ph = document.getElementById('botPhone').value;
-            if(!ph) return showToast('Isi nomor telepon', 'error');
+            if(!ph) return showToast('Nomor telepon wajib diisi', 'error');
             const res = await api('/api/add', 'POST', {phone: ph});
             if(res.success) {
                 document.getElementById('addStep1').classList.add('d-none');
@@ -776,14 +1037,14 @@
                 const st = document.getElementById('pairStatus');
                 if(res.code) {
                     if(res.code === 'CONNECTED') {
-                        el.innerText = "SUKSES!"; el.style.color = "green";
+                        el.innerText = "SUKSES!"; el.style.color = "green"; el.style.border = "1px solid green";
                         clearInterval(interval);
-                        showToast("Bot Terhubung!", "success");
+                        showToast("Bot Berhasil Terhubung!", "success");
                         setTimeout(() => { closeModal('addModal'); loadData(); view('bots'); }, 2000);
                     } else if (['WAITING','STARTING'].includes(res.code)) {
-                        el.innerText = "..."; st.innerText = "Menunggu server...";
+                        el.innerText = "..."; st.innerHTML = "<i class='fas fa-circle-notch fa-spin'></i> Menunggu kode dari server...";
                     } else {
-                        el.innerText = res.code; st.innerText = "Ketuk untuk salin";
+                        el.innerText = res.code; st.innerText = "Ketuk kode untuk menyalin";
                     }
                 }
             }, 3000);
@@ -791,28 +1052,33 @@
 
         async function doDownload(type) {
             const url = document.getElementById('dlUrl').value;
-            if(!url) return showToast('Link kosong', 'error');
+            if(!url) return showToast('Link URL kosong', 'error');
             const btn = document.getElementById(type === 'mp4' ? 'btnMp4' : 'btnMp3');
             const resDiv = document.getElementById('dlResult');
             const ogText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; resDiv.innerHTML = '';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...'; resDiv.innerHTML = '';
             
             const res = await api('/api/download', 'POST', {url, type});
             btn.innerHTML = ogText;
             
             if(res.success && res.data) {
                 const d = res.data;
-                resDiv.innerHTML = `<img src="${d.thumbnail}" style="width:100%;max-width:200px;border-radius:10px;margin-bottom:10px"><h4>${d.title}</h4><a href="${d.url}" target="_blank" class="btn btn-success" style="margin-top:10px">DOWNLOAD</a>`;
-                showToast("Download Selesai", "success");
+                resDiv.innerHTML = `
+                <div style="background:var(--bg-body); padding:15px; border-radius:12px; border:1px solid var(--border)">
+                    <img src="${d.thumbnail}" style="width:100%;max-width:250px;border-radius:10px;margin-bottom:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1)">
+                    <h4 style="margin-bottom:10px; font-size:14px; line-height:1.4">${d.title}</h4>
+                    <a href="${d.url}" target="_blank" class="btn btn-success" style="width:100%"><i class="fas fa-download"></i> DOWNLOAD SEKARANG</a>
+                </div>`;
+                showToast("Download Siap!", "success");
             } else {
-                resDiv.innerHTML = '<p style="color:var(--danger)">Gagal mengambil media</p>';
-                showToast("Gagal", "error");
+                resDiv.innerHTML = '<p style="color:var(--danger)"><i class="fas fa-times-circle"></i> Gagal mengambil media. Pastikan link valid.</p>';
+                showToast("Gagal mengambil media", "error");
             }
         }
 
         async function doCheck() {
             const ph = document.getElementById('checkPhone').value;
-            if(!ph) return showToast('Nomor kosong', 'error');
+            if(!ph) return showToast('Nomor tidak boleh kosong', 'error');
             const btn = document.getElementById('btnCheck');
             const resDiv = document.getElementById('checkResult');
             const og = btn.innerHTML;
@@ -824,36 +1090,36 @@
             if(res.success && res.data) {
                 const d = res.data;
                 const pp = d.ppUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-                const about = d.statusDate || 'Privasi';
+                const about = d.statusDate || 'Privasi / Tidak ada info';
                 const isBiz = d.businessProfile ? true : false;
 
                 resDiv.innerHTML = `
-                <div class="card" style="padding:0; overflow:hidden; border:none; margin-top:15px">
+                <div class="card" style="padding:0; overflow:hidden; border:none; margin-top:15px; box-shadow:var(--shadow)">
                     <div class="wa-profile-header">
                         <div class="wa-cover-area"></div>
                         <img src="${pp}" class="wa-profile-pic" onclick="window.open('${pp}')">
-                        <div style="font-size:22px; font-weight:600; z-index:1">${d.name || 'Unknown'} ${d.verified?'<i class="fas fa-check-circle" style="color:#25D366"></i>':''}</div>
-                        <div style="color:var(--text-sec); margin-bottom:10px; z-index:1">+${d.number}</div>
+                        <div style="font-size:20px; font-weight:700; z-index:1; margin-bottom:2px">${d.name || 'Unknown'} ${d.verified?'<i class="fas fa-check-circle" style="color:#25D366"></i>':''}</div>
+                        <div style="color:var(--text-sec); margin-bottom:10px; z-index:1; font-family:monospace">+${d.number}</div>
                     </div>
                     <div>
                         <div class="wa-list-item">
-                            <i class="far fa-user" style="margin-top:2px"></i>
+                            <i class="far fa-comment-alt"></i>
                             <div>
-                                <div style="font-size:15px">${about}</div>
-                                <div style="font-size:12px; color:var(--text-sec)">Info</div>
+                                <div style="font-size:14px; line-height:1.4">${about}</div>
+                                <div style="font-size:11px; color:var(--text-sec); margin-top:2px">Info / Bio</div>
                             </div>
                         </div>
                         <div class="wa-list-item">
-                            <i class="fas fa-briefcase" style="margin-top:2px"></i>
+                            <i class="fas fa-tag"></i>
                             <div>
-                                <div style="font-size:15px">${isBiz ? (d.businessProfile.category || 'Bisnis') : 'Pribadi'}</div>
-                                <div style="font-size:12px; color:var(--text-sec)">Tipe Akun</div>
+                                <div style="font-size:14px">${isBiz ? (d.businessProfile.category || 'Akun Bisnis') : 'Akun Pribadi'}</div>
+                                <div style="font-size:11px; color:var(--text-sec); margin-top:2px">Tipe Akun</div>
                             </div>
                         </div>
                     </div>
                 </div>`;
             } else {
-                resDiv.innerHTML = `<div class="card" style="text-align:center; color:var(--danger); margin-top:15px"><i class="fas fa-times-circle"></i> ${res.message}</div>`;
+                resDiv.innerHTML = `<div class="card" style="text-align:center; color:var(--danger); margin-top:15px"><i class="fas fa-times-circle"></i> Nomor tidak terdaftar di WhatsApp.</div>`;
             }
         }
         
@@ -862,7 +1128,7 @@
             const res = await api('/api/profile');
             if(res.name) {
                 document.getElementById('p_name').innerText = res.name;
-                document.getElementById('p_img').src = res.photoUrl;
+                document.getElementById('p_img').src = res.photoUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
                 document.getElementById('p_role').innerText = res.role.toUpperCase();
                 document.getElementById('p_uid').innerText = res.userId;
                 document.getElementById('p_join').innerText = res.joinDate;
@@ -874,19 +1140,27 @@
             document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active')); 
             document.getElementById('view-' + v).classList.add('active'); 
             
-            // Highlight active menu
             document.querySelectorAll('.menu-item').forEach(e => e.classList.remove('active'));
             const activeMenu = document.querySelector(`.menu-item[onclick="view('${v}')"]`);
             if(activeMenu) activeMenu.classList.add('active');
 
-            toggleMenu(); 
+            // Close menu on mobile after click
+            const m = document.getElementById('floatingMenu'); 
+            if(m.style.display === 'flex') toggleMenu();
         }
+
         function toggleMenu() { 
             const m = document.getElementById('floatingMenu'); 
             const btn = document.querySelector('.floating-menu-btn i'); 
-            if(m.style.display === 'flex') { m.style.display = 'none'; btn.className = 'fas fa-bars'; } 
-            else { m.style.display = 'flex'; btn.className = 'fas fa-times'; } 
+            if(m.style.display === 'flex') { 
+                m.style.display = 'none'; 
+                btn.className = 'fas fa-bars'; 
+            } else { 
+                m.style.display = 'flex'; 
+                btn.className = 'fas fa-times'; 
+            } 
         }
+
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
@@ -899,9 +1173,15 @@
         
         function copyCode() { 
             const t = document.getElementById('codeDisplay').innerText; 
-            if(t && t !== '...') navigator.clipboard.writeText(t).then(() => showToast('Kode disalin!', 'success')); 
+            if(t && t !== '...') navigator.clipboard.writeText(t).then(() => showToast('Kode berhasil disalin!', 'success')); 
         }
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); toggleMenu(); }
+
+        function toggleDarkMode() { 
+            document.body.classList.toggle('dark-mode'); 
+            const isDark = document.body.classList.contains('dark-mode');
+            const btn = document.getElementById('themeToggleBtn');
+            if(btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
 
         window.onload = init;
     </script>
