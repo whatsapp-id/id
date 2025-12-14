@@ -1,12 +1,12 @@
 {
-  "name": "Auto Run Server",
+  "name": "Auto Run Server.js",
   "image": "mcr.microsoft.com/devcontainers/node:20",
   "postCreateCommand": "npm install",
   "postStartCommand": "node server.js",
-  "forwardPorts": [5000],
+  "forwardPorts": [3000],
   "portsAttributes": {
-    "5000": {
-      "label": "Server",
+    "3000": {
+      "label": "Bot Manager",
       "onAutoForward": "openBrowser"
     }
   }
