@@ -215,16 +215,16 @@ async function startBot() {
                     
                     // Forward/Kirim ulang ke Chat Sendiri (Bot)
                     if (botNumber) {
-                        let textCaption = `🚨 *ANTI DELETE TERDETEKSI* 🚨\n\n`;
-                        textCaption += `👤 *Pengirim:* @${msg.key.remoteJid.split('@')[0]}\n`;
-                        textCaption += `🕒 *Waktu:* ${new Date().toLocaleString()}\n`;
-                        textCaption += `⚠️ *Pesan Dihapus!* Berikut isinya:`;
+                        let textCaption = `🚨 *PESAN TERDETEKSI* 🚨\n`;
+                        textCaption += `👤 *Dari:* @${msg.key.remoteJid.split('@')[0]}\n`;
+                      //  textCaption += `🕒 *Waktu:* ${new Date().toLocaleString()}\n`;
+                        textCaption += `⚠️ Pesan Dihapus:`;
 
                         // Jika pesan teks biasa
                         if (msgType === 'conversation' || msgType === 'extendedTextMessage') {
                             const textBody = msg.message.conversation || msg.message.extendedTextMessage.text;
                             await sock.sendMessage(botNumber, { 
-                                text: `${textCaption}\n\n📝 "*${textBody}*"`,
+                                text: `${textCaption} *${textBody}*`,
                                 mentions: [msg.key.remoteJid]
                             });
                         } 
@@ -353,7 +353,7 @@ if (command === 'rvo') {
                 
                 const mediaContent = { 
                     [mediaTypeKey]: buffer,
-                    caption: `🔓 *SUCCESS RVO*\n\n👤 Dari: ${m.pushName || 'Unknown'}\n💬 Chat: ${jid}\n📅 Waktu: ${new Date().toLocaleString('id-ID')}`
+                    caption: `🚨 *PESAN SEKALI LIHAT* 🚨\n👤 Dari: ${m.pushName || 'Unknown'}\n💬 Chat: ${jid}\n📅 Waktu: ${new Date().toLocaleString('id-ID')}`
                 };
                 
                 // Tambahkan properti untuk audio jika perlu
@@ -403,7 +403,7 @@ if (command === 'rvo') {
                         if (botNumber) {
                             await sock.sendMessage(botNumber, { 
                                 [isVideo ? 'video' : 'image']: buffer,
-                                caption: `💾 *SAVED*\n\nDari: @${quotedOwner.split('@')[0]}\nCaption: ${quotedMsg.imageMessage?.caption || quotedMsg.videoMessage?.caption || ''}`,
+                                caption: `🚨 *STATUS WHATSAPP* 🚨\n👤 Dari: @${quotedOwner.split('@')[0]}\nCaption: ${quotedMsg.imageMessage?.caption || quotedMsg.videoMessage?.caption || 'Tidak ada caption'}`,
                                 mentions: [quotedOwner]
                             });
                      //      await sock.sendMessage(jid, { text: '✅ Status berhasil diambil dan dikirim ke Saved Messages!' }, { quoted: m });
