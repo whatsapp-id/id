@@ -152,22 +152,39 @@ async function startBot() {
                 }
 
                 // 5. Susun Data Hasil
-                const result = {
-                    number: targetJid.split('@')[0],
-                    exists: true,
-                    // Tipe Akun
-                    type: isBusiness ? 'WhatsApp Business' : 'WhatsApp Personal',
-                    // Nama (Prioritas: Bisnis Profile > Notify Name > Unknown)
-                    status: statusData.status,
-                    name: statusData.setAt ? new Date(statusData.setAt).toLocaleString('id-ID') : 'Tidak Diketahui',
-                    statusDate: businessProfile?.description || onWa.name || 'Tidak Diketahui', 
-                    ppUrl: ppUrl,
-                    // Info Bisnis Lengkap
-                    category: businessProfile?.category || 'Privat',
-                    address: businessProfile?.address || 'Privat',
-                    email: businessProfile?.email || 'Privat',
-                    website: businessProfile?.website?.[0] || 'Privat'
-                };
+                // ================= FIX CHECK RESULT =================
+const about = statusData?.status || null;
+const statusDate = statusData?.setAt
+    ? new Date(statusData.setAt * 1000).toLocaleString('id-ID')
+    : null;
+
+const result = {
+    exists: true,
+    number: targetJid.split('@')[0],
+    jid: targetJid,
+
+    // 🔥 NAMA YANG BENAR
+    name: businessProfile?.name || onWa.notify || onWa.name || null,
+    pushName: onWa.notify || null,
+
+    // 🔥 BIO
+    about,
+    statusDate,
+
+    // 🔥 FOTO PROFIL
+    ppUrl,
+
+    // 🔥 BUSINESS INFO
+    isBusiness,
+    businessProfile: isBusiness ? {
+        description: businessProfile?.description || null,
+        category: businessProfile?.category || null,
+        address: businessProfile?.address || null,
+        email: businessProfile?.email || null,
+        website: businessProfile?.website?.[0] || null
+    } : null
+};
+// ====================================================
 
                 // Kirim balik ke Server
                 process.send({
