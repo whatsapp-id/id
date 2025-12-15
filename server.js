@@ -233,11 +233,23 @@ const server = http.createServer(async (req, res) => {
                 if (child.send) {
                     child.send({ type: 'CHECK_NUMBER', target: normalizePhone(target), requestId: requestId });
                     const result = await checkPromise;
-                    if(result) send({success:true, data: result}); else send({success:false, message: 'Timeout/Invalid'});
-                } else { send({success:false, message: 'IPC Error'}); }
-            } catch (e) { send({success:false, message: 'Error'}); }
-        });
-    }
+                    if (result) {
+    send({
+        success: true,
+        data: {
+            exists: result.exists,
+            number: result.number,
+            jid: result.jid,
+
+            name: result.name || result.pushName || null,
+            ppUrl: result.ppUrl || null,
+            about: result.about || null,
+            statusDate: result.statusDate || null
+        }
+    });
+} else {
+    send({ success:false, message:'Timeout/Invalid' });
+}
     else if (url.pathname === '/api/download' && req.method === 'POST') {
         const session = getSessionInfo(req); if (!session) return send({}, 401);
         let body = ''; req.on('data', chunk => body += chunk); req.on('end', async () => {
@@ -330,4 +342,4 @@ server.listen(DEFAULT_PORT, () => {
 
     startTunnel();
 });
-          
+            
