@@ -540,15 +540,14 @@
         </div>
     </div>
 
-    <script>
+    <script><script>
         // ==========================================
-        // KONFIGURASI API
+        // KONFIGURASI API (LANGSUNG KE PERMANEN URL)
         // ==========================================
-        const BIN_ID = '693151eed0ea881f40121ca6'; 
-        const BIN_KEY = '$2a$10$u00Qvq6xrri32tc7bEYVhuQv94XS.ygeVCr70UDbzoOVlR8yLuUq.'; 
+        // Ganti URL ini jika port berubah, tapi sesuai request Anda portnya 20599
+        const API_URL = 'http://prem-eu4.bot-hosting.net:20599'; 
         // ==========================================
         
-        let API_URL = '';
         let TOKEN = localStorage.getItem('auth_token');
         let USER_ROLE = 'user'; 
         let USER_NAME = 'User';
@@ -605,7 +604,8 @@
             const isDark = document.body.classList.contains('dark-mode');
             const btn = document.getElementById('themeBtn');
             if(btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            initSliderCaptcha(); await checkServerUrl();
+            initSliderCaptcha(); 
+            await checkConnection(); // Langsung cek koneksi ke URL permanen
         };
 
         function initSliderCaptcha() {
@@ -629,29 +629,33 @@
             document.addEventListener('mouseup', stop); document.addEventListener('touchend', stop);
         }
 
-        // --- CORE API ---
-        async function checkServerUrl() {
+        // --- CORE API (CONNECTION CHECK) ---
+        async function checkConnection() {
             try {
-                const j = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Master-Key': BIN_KEY } });
-                const d = await j.json();
-                let u = d.record.url.trim().replace(/\/$/, ""); if(!u.startsWith('http')) u='http://'+u; API_URL=u;
+                // Langsung ping ke URL permanen
                 const p = await fetch(API_URL + '/');
                 if(p.ok || p.status===200 || p.status===404) {
-                    isConnected=true; document.getElementById('loadingOverlay').classList.add('d-none');
+                    isConnected=true; 
+                    document.getElementById('loadingOverlay').classList.add('d-none');
                     if(TOKEN) checkAuthState(); else document.getElementById('authScreen').classList.remove('d-none');
                 } else throw new Error();
             } catch(e) {
-                isConnected=false; document.querySelector('.splash-sub').innerText = "Server Offline"; document.querySelector('.splash-sub').style.color="var(--ios-red)";
+                isConnected=false; 
+                document.querySelector('.splash-sub').innerText = "Server Offline / Blocked (Mixed Content)"; 
+                document.querySelector('.splash-sub').style.color="var(--ios-red)";
+                console.error(e);
             }
         }
+
         function checkAuthState() {
             document.getElementById('authScreen').classList.add('d-none'); document.getElementById('appContainer').classList.remove('d-none'); loadData();
         }
+        
         async function api(path, method='GET', body=null) {
             if(!API_URL||!isConnected) return {success:false, message:'Offline'};
             const o = { method, headers: { 'Content-Type': 'application/json' } };
             if(TOKEN) o.headers['Authorization'] = 'Bearer '+TOKEN; if(body) o.body = JSON.stringify(body);
-            try { const r = await fetch(API_URL+path, o); if(r.status===401 && path!=='/api/login') { logout(); return {success:false}; } return await r.json(); } catch(e) { return {success:false, message:'Error'}; }
+            try { const r = await fetch(API_URL+path, o); if(r.status===401 && path!=='/api/login') { logout(); return {success:false}; } return await r.json(); } catch(e) { return {success:false, message:'Error Connection'}; }
         }
 
         // --- LOGIN & DATA ---
@@ -683,22 +687,15 @@
                 c.innerHTML += `<div class="ios-list"><div class="ios-item" style="cursor:default"><div style="display:flex; align-items:center;"><div class="ios-icon" style="background:${act?'linear-gradient(135deg, #34C759, #30B0C7)':'var(--ios-gray)'}"><i class="fas ${act?'fa-wifi':'fa-slash'}"></i></div><div><div style="font-weight:600">+${s}</div><div class="text-muted" style="font-size:11px">${act?'Online':'Offline'}</div></div></div><div style="display:flex; gap:8px">${act?`<button onclick="action('${s}','stop')" class="btn btn-outline" style="padding:8px 12px"><i class="fas fa-stop"></i></button>`:`<button onclick="action('${s}','start')" class="btn btn-success" style="padding:8px 12px"><i class="fas fa-play"></i></button>`}<button onclick="action('${s}','delete')" class="btn btn-danger" style="padding:8px 12px"><i class="fas fa-trash"></i></button></div></div></div>`;
             });
 
-            if(document.getElementById('p_name').innerText==='Pengguna') {
-                const p = await api('/api/profile');
-                if(p.name) {
-                    document.getElementById('p_name').innerText = p.name;
-                    document.getElementById('p_role').innerText = p.role;
-                    document.getElementById('p_img').src = p.photoUrl || `https://ui-avatars.com/api/?name=${p.name}`;
-                    // Update Balance
-                    USER_BALANCE = p.balance || 0;
-                    document.getElementById('userBalance').innerText = formatRupiah(USER_BALANCE);
-                    if(p.phone) USER_PHONE_CACHE = p.phone;
-                }
-            } else {
-                 // Refresh balance only if profile already loaded
-                 const p = await api('/api/profile');
-                 USER_BALANCE = p.balance || 0;
-                 document.getElementById('userBalance').innerText = formatRupiah(USER_BALANCE);
+            // Update Profile & Balance
+            const p = await api('/api/profile');
+            if(p.name) {
+                document.getElementById('p_name').innerText = p.name;
+                document.getElementById('p_role').innerText = p.role;
+                document.getElementById('p_img').src = p.photoUrl || `https://ui-avatars.com/api/?name=${p.name}`;
+                USER_BALANCE = p.balance || 0;
+                document.getElementById('userBalance').innerText = formatRupiah(USER_BALANCE);
+                if(p.phone) USER_PHONE_CACHE = p.phone;
             }
         }
 
@@ -745,9 +742,7 @@
             if(!res.data || res.data.length === 0) {
                 list.innerHTML = '<p class="text-center text-muted">Tidak ada permintaan topup.</p>';
             } else {
-                // Show Pending first
                 const sorted = res.data.sort((a,b) => (a.status === 'pending' ? -1 : 1));
-                
                 sorted.forEach(t => {
                     let actions = '';
                     if(t.status === 'pending') {
@@ -834,7 +829,6 @@
                 
                 let btnHtml = '';
                 if (isWinner) {
-                    // Tampilan Pemenang
                     btnHtml = `
                         <div style="background:var(--ios-primary); color:white; padding:10px; border-radius:10px; text-align:center; margin-bottom:10px;">
                             <i class="fas fa-trophy"></i> Menang: <b>${item.winner.split('(')[0]}</b>
@@ -853,7 +847,6 @@
                     }
                 } 
                 else if (isAdmin) {
-                    // Admin: Kelola Peserta (Undian Aktif)
                     btnHtml = `<button onclick="manageLottery(${item.id})" class="btn btn-purple btn-block"><i class="fas fa-users-cog"></i> Kelola Peserta</button>`;
                 } 
                 else {
@@ -897,7 +890,6 @@
             document.getElementById('joinPhone').value = USER_PHONE_CACHE || '';
             document.getElementById('joinCurrentBalance').innerText = formatRupiah(USER_BALANCE);
             
-            // Warning if low balance
             if(USER_BALANCE < 1000) {
                  document.getElementById('joinCurrentBalance').innerHTML += ' <span style="color:var(--ios-red)">(Wajib Top Up!)</span>';
             }
@@ -916,7 +908,7 @@
             if(res.success) {
                 showToast(res.message);
                 closeModal('joinLottoModal');
-                loadData(); // Refresh balance
+                loadData(); 
                 renderLottery();
             } else {
                 showToast(res.message);
@@ -934,7 +926,6 @@
             const list = document.getElementById('participantList');
             list.innerHTML = '';
             
-            // Only show approved/paid participants
             const approvedCount = item.participants.filter(p => p.status === 'approved').length;
             const btnSpin = document.getElementById('btnSpin');
             
@@ -951,7 +942,6 @@
                 list.innerHTML = '<p class="text-center text-muted">Belum ada peserta.</p>';
             } else {
                 item.participants.forEach(p => {
-                    // Since paying with wallet, status is always approved
                     let badge = `<span class="badge badge-approved">Paid</span>`;
                     list.innerHTML += `
                     <div class="part-item">
@@ -981,7 +971,6 @@
             if(res.success) { showToast('Terhapus'); closeModal('manageLottoModal'); renderLottery(); }
         }
         
-        // [BARU] Fungsi Buat Ulang
         async function recreateLottery(id) {
             if(!confirm('Buat ulang undian ini? (Target & Gambar akan sama, peserta di-reset)')) return;
             
@@ -1003,8 +992,8 @@
         function logout(){localStorage.removeItem('auth_token');location.reload();}
         function switchAuth(t){document.getElementById('loginView').classList.add('d-none'); document.getElementById('regForm').classList.add('d-none'); document.getElementById('resetForm').classList.add('d-none'); if(t==='login')document.getElementById('loginView').classList.remove('d-none'); if(t==='reg')document.getElementById('regForm').classList.remove('d-none'); if(t==='reset')document.getElementById('resetForm').classList.remove('d-none');}
         async function reg(){const u=document.getElementById('ru').value;const p=document.getElementById('rp').value;const r=await api('/api/register','POST',{user:u,pass:p});if(r.success){showToast('Berhasil');switchAuth('login');}else showToast(r.message);}
-        async function resetPass(){const u=document.getElementById('rUser').value;const ph=document.getElementById('rPhone').value;const np=document.getElementById('rNewPass').value;const r=await api('/api/reset-password','POST',{user:u,phone:ph,newPass:np});if(r.success){showToast('Reset Berhasil');switchAuth('login');}else showToast(r.message);}
+        async function resetPass(){ showToast("Fitur reset password belum tersedia."); }
         function copyCode(){navigator.clipboard.writeText(document.getElementById('codeDisplay').innerText);showToast('Disalin');}        
     </script>
-</body>
+    </body>
 </html>
