@@ -2,49 +2,51 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WhatsApp Manager iOS</title>
+    <!-- Font iOS System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* === WHATSAPP THEME REFINED === */
-            --wa-primary: #00a884;
-            --wa-primary-dark: #008069;
-            --wa-secondary: #25D366;
-            --wa-accent: #00ffbf;
+            /* === iOS THEME VARIABLES === */
+            --ios-primary: #34C759; /* Apple Green */
+            --ios-blue: #007AFF;
+            --ios-red: #FF3B30;
+            --ios-yellow: #FFCC00;
+            --ios-gray: #8E8E93;
+            --ios-purple: #AF52DE;
             
-            /* Light Mode Defaults */
-            --bg-body: #eff2f5;
-            --bg-card: #ffffff;
-            --bg-header: #00a884;
-            --text-pri: #111B21;
-            --text-sec: #54656f;
-            --border: #e9edef;
-            --input-bg: #ffffff;
-            --danger: #EA0038;
-            --radius: 16px;
-            --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --header-text: #ffffff;
+            /* Light Mode */
+            --bg-body: #F2F2F7;
+            --bg-card: #FFFFFF;
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --text-pri: #000000;
+            --text-sec: #8A8A8E;
+            --border: #E5E5EA;
+            --separator: #C6C6C8;
+            --input-bg: #E9E9EB;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --progress-bg: #E9E9EB;
         }
 
-        /* DARK MODE (Native WA Web Colors) */
+        /* Dark Mode */
         body.dark-mode {
-            --wa-primary: #00a884;
-            --wa-primary-dark: #202c33;
-            --bg-body: #111b21; /* WA Dark Background */
-            --bg-card: #202c33; /* WA Dark Card */
-            --bg-header: #202c33;
-            --text-pri: #e9edef;
-            --text-sec: #8696a0;
-            --border: #2a3942;
-            --input-bg: #2a3942;
-            --danger: #ef5350;
-            --shadow: 0 4px 12px rgba(0,0,0,0.2);
-            --header-text: #aebac1;
+            --bg-body: #000000;
+            --bg-card: #1C1C1E;
+            --bg-glass: rgba(28, 28, 30, 0.85);
+            --text-pri: #FFFFFF;
+            --text-sec: #98989D;
+            --border: #38383A;
+            --separator: #38383A;
+            --input-bg: #2C2C2E;
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
+            --nav-bg: rgba(28, 28, 30, 0.9);
+            --progress-bg: #3A3A3C;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; outline: none; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif; outline: none; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background-color: var(--bg-body); 
@@ -52,697 +54,495 @@
             min-height: 100vh; 
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
+            padding-bottom: 90px;
+            padding-top: 60px;
         }
 
-        /* === NEON ANIMATION LINE === */
-        .neon-line {
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--wa-secondary), #e6ff00, var(--wa-secondary));
-            background-size: 200% 100%;
-            border-radius: 5px;
-            margin: 20px 0;
-            opacity: 0.8;
-            box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
-            animation: neonFlow 3s linear infinite
+        /* === HEADER iOS STYLE === */
+        .ios-header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            height: 60px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 0.5px solid var(--separator);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
         }
-        
-        @keyframes neonFlow {
-            0% { background-position: 100% 0; }
-            100% { background-position: -100% 0; }
-        }
+        .header-title { font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
+        .header-btn { font-size: 18px; color: var(--ios-blue); background: none; border: none; cursor: pointer; }
+        .header-btn.danger { color: var(--ios-red); }
 
-        /* HEADER */
-        .header { 
-            background: var(--bg-header); 
-            color: white; 
-            padding: 10px 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .header-logo { 
-            font-weight: 700; 
-            font-size: 21px; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            letter-spacing: 0.5px;
-        }
-        
-        .header-actions { display: flex; gap: 10px; align-items: center; }
-        
-        .header-btn { 
-            background: rgba(255,255,255,0.1); 
-            border: none; 
-            color: white; 
-            font-size: 16px; 
-            cursor: pointer; 
-            width: 35px; height: 35px; 
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-        }
-        .header-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
-        
-        /* FLOATING MENU (SIDEBAR) */
-        .floating-menu-btn { 
-            position: fixed; bottom: 30px; right: 25px; 
-            width: 60px; height: 60px; 
-            background: var(--wa-primary); 
-            border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            color: white; font-size: 24px; 
-            box-shadow: 0 4px 20px rgba(0, 168, 132, 0.4); 
-            z-index: 1001; cursor: pointer; border: none; 
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .floating-menu-btn:active { transform: scale(0.9); }
-        .floating-menu-btn:hover { transform: rotate(90deg); }
-        
-        .floating-menu { 
-            position: fixed; bottom: 110px; right: 25px; 
+        /* === WIDGETS & CARDS === */
+        .content-container { padding: 20px; max-width: 600px; margin: 0 auto; }
+
+        .card {
             background: var(--bg-card);
-            border-radius: 16px; padding: 12px; 
-            display: none; flex-direction: column; gap: 8px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
-            z-index: 1000; min-width: 220px; 
-            border: 1px solid var(--border); 
-            transform-origin: bottom right;
-        }
-
-        .floating-menu.active { display: flex; animation: expandUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        
-        .menu-item { 
-            padding: 12px 18px; 
-            border-radius: 12px; 
-            display: flex; align-items: center; gap: 15px; 
-            cursor: pointer; 
-            color: var(--text-pri); 
-            transition: 0.2s; font-weight: 500; font-size: 14px; 
-        }
-        .menu-item i { width: 20px; text-align: center; font-size: 16px; color: var(--text-sec); transition: 0.2s; }
-        .menu-item:hover { background: rgba(0, 168, 132, 0.08); }
-        .menu-item:hover i { color: var(--wa-primary); }
-        .menu-item.active { background: var(--wa-primary); color: white; box-shadow: 0 4px 12px rgba(0, 168, 132, 0.3); }
-        .menu-item.active i { color: white; }
-
-        /* CONTENT */
-        .main-content { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 120px; }
-        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
-        .view-section.active { display: block; }
-        
-        .card { 
-            background: var(--bg-card); 
-            border-radius: var(--radius); 
-            padding: 20px; 
-            margin-bottom: 20px; 
-            box-shadow: var(--shadow); 
-            border: 1px solid var(--wa-secondary); 
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
         }
+
+        /* WIDGETS */
+        .widget-clock { text-align: center; padding: 10px 0; margin-bottom: 20px; }
+        .clock-time { font-size: 42px; font-weight: 200; letter-spacing: -1px; line-height: 1; }
+        .clock-date { font-size: 14px; color: var(--text-sec); font-weight: 500; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .stats-row { display: flex; gap: 12px; margin-bottom: 20px; }
+        .stat-card {
+            flex: 1; background: var(--bg-card); padding: 15px; border-radius: 16px; box-shadow: var(--shadow);
+            text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .stat-icon { font-size: 20px; margin-bottom: 8px; }
+        .stat-value { font-size: 16px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-sec); margin-top: 2px; }
+        .progress-mini { width: 100%; height: 4px; background: var(--input-bg); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+        /* === WINNER ALERT STYLE === */
+        .winner-alert {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: black;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        /* === LIST GROUP === */
+        .ios-list { background: var(--bg-card); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .ios-item {
+            display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
+            border-bottom: 0.5px solid var(--separator); background: var(--bg-card); cursor: pointer; transition: 0.2s;
+        }
+        .ios-item:last-child { border-bottom: none; }
+        .ios-item:active { background: var(--input-bg); }
+        .ios-icon {
+            width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; color: white; font-size: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* === LOTTERY STYLES === */
+        .lotto-card {
+            background: var(--bg-card); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); margin-bottom: 20px; position: relative;
+        }
+        .lotto-img { width: 100%; height: 180px; object-fit: cover; }
+        .lotto-body { padding: 15px; }
+        .lotto-title { font-weight: 700; font-size: 18px; margin-bottom: 5px; }
+        .lotto-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-sec); margin-bottom: 10px; }
+        .lotto-progress-bg { width: 100%; height: 10px; background: var(--progress-bg); border-radius: 5px; overflow: hidden; margin-bottom: 15px; }
+        .lotto-progress-bar { height: 100%; background: linear-gradient(90deg, var(--ios-blue), var(--ios-purple)); border-radius: 5px; transition: width 0.5s; }
+        .winner-badge {
+            position: absolute; top: 15px; right: 15px; background: rgba(255, 204, 0, 0.9); color: black;
+            padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; backdrop-filter: blur(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); animation: bounceIn 0.5s;
+        }
+        @keyframes bounceIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        /* FEATURE GRID */
-        .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
-        @media (min-width: 600px) { .feature-grid { grid-template-columns: repeat(4, 1fr); } }
-
-        .feature-item { 
-            background: var(--bg-body); 
-            padding: 20px 15px; 
-            border-radius: 12px; 
-            text-align: center; 
-            border: 1px solid var(--border); 
-            transition: 0.3s; 
-            cursor: pointer;
+        /* Participant List & Top Up List in Admin Modal */
+        .part-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 0.5px solid var(--separator);
         }
-        .feature-item:hover { transform: translateY(-5px); border-color: var(--wa-primary); }
-        .feature-item i { font-size: 28px; color: var(--wa-primary); margin-bottom: 12px; display: block; }
-        .feature-item h4 { font-size: 14px; margin-bottom: 5px; color: var(--text-pri); }
-        .feature-item p { font-size: 11px; color: var(--text-sec); line-height: 1.4; }
+        .part-info { font-size: 14px; }
+        .part-sub { font-size: 11px; color: var(--text-sec); }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+        .badge-pending { background: var(--ios-yellow); color: black; }
+        .badge-approved { background: var(--ios-primary); color: white; }
+        .badge-rejected { background: var(--ios-red); color: white; }
 
-        /* GUIDE LIST */
-        .guide-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
-        .guide-item:last-child { border-bottom: none; }
-        .guide-icon { 
-            width: 45px; height: 45px; 
-            background: rgba(0, 168, 132, 0.1); 
-            border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            color: var(--wa-primary); 
-            font-size: 20px; flex-shrink: 0; 
+        /* === BOTTOM NAV === */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 85px;
+            background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 0.5px solid var(--separator); display: flex; justify-content: space-around;
+            align-items: flex-start; padding-top: 12px; z-index: 999;
         }
-        .guide-content h4 { font-size: 16px; margin-bottom: 6px; color: var(--text-pri); }
-        .guide-content p { font-size: 13px; color: var(--text-sec); line-height: 1.6; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sec); font-size: 10px; gap: 5px; cursor: pointer; width: 20%; transition: 0.2s; }
+        .nav-item i { font-size: 22px; transition: 0.2s; }
+        .nav-item.active { color: var(--ios-blue); }
+        .nav-item.active i { transform: translateY(-2px); }
 
-        /* BUTTONS & INPUTS */
-        .btn { 
-            padding: 12px 20px; 
-            border-radius: 50px; 
-            border: none; 
-            font-weight: 600; 
-            cursor: pointer; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 8px; 
-            font-size: 14px; 
-            transition: 0.2s; 
-            letter-spacing: 0.5px;
-        }
-        .btn:active { transform: scale(0.96); }
-        .btn-primary { background: var(--wa-primary); color: #ffffff; box-shadow: 0 4px 10px rgba(0, 168, 132, 0.3); }
-        .btn-primary:hover { background: var(--wa-primary-dark); }
-        .btn-success { background: var(--wa-secondary); color: #fff; }
-        .btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 10px rgba(234, 0, 56, 0.3); }
-        .btn-outline { background: transparent; border: 1px solid var(--text-sec); color: var(--text-pri); }
+        /* === BUTTONS & INPUTS === */
+        .btn { border: none; border-radius: 12px; padding: 12px 20px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:active { transform: scale(0.97); opacity: 0.8; }
         .btn-block { width: 100%; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
+        .btn-primary { background: var(--ios-blue); color: white; }
+        .btn-success { background: var(--ios-primary); color: white; }
+        .btn-danger { background: var(--ios-red); color: white; }
+        .btn-purple { background: var(--ios-purple); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--text-sec); color: var(--text-pri); }
         
-        .form-input { 
-            width: 100%; 
-            padding: 14px 16px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border); 
-            background: var(--input-bg); 
-            color: var(--text-pri); 
-            margin-bottom: 15px; 
-            transition: 0.3s; 
-            font-size: 15px;
+        .form-input {
+            width: 100%; padding: 16px; background: var(--input-bg); border: none; border-radius: 12px;
+            color: var(--text-pri); font-size: 16px; margin-bottom: 15px;
         }
-        .form-input:focus { border-color: var(--wa-primary); box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.1); }
-        
-        /* MODAL */
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            z-index: 2000; 
-            display: none; align-items: center; justify-content: center; 
-            backdrop-filter: blur(5px); 
+
+        /* === MODALS === */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: flex-end; justify-content: center;
         }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
-        .modal-box { 
-            background: var(--bg-card); 
-            padding: 30px; 
-            border-radius: 20px; 
-            width: 90%; max-width: 420px; 
-            max-height: 90vh; overflow-y: auto; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
-            border: 1px solid var(--border); 
-            animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .modal-box {
+            background: var(--bg-card); width: 100%; max-width: 600px; border-radius: 20px 20px 0 0;
+            padding: 30px 20px 50px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); max-height: 90vh; overflow-y: auto;
         }
+        .modal-handle { width: 40px; height: 5px; background: var(--separator); border-radius: 10px; margin: 0 auto 20px auto; }
 
-        /* AUTH SPECIFIC */
-        .auth-header { text-align: center; margin-bottom: 25px; }
-        .auth-logo { font-size: 50px; color: var(--wa-primary); margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(0,168,132,0.3)); }
-        .auth-wa { font-size: 35px; color: var(--wa-secondary); margin-bottom: 0px; filter: drop-shadow(0 0 10px rgba(0,168,132,0.3)); }
-        .auth-title { font-size: 22px; font-weight: 700; color: var(--text-pri); margin-bottom: 5px; }
-        
+        /* AUTH & OTHERS */
+        .auth-container { height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 30px; background: var(--bg-body); }
+        .auth-logo { font-size: 60px; color: var(--text-pri); margin-bottom: 20px; text-align: center; }
+        .d-none { display: none !important; }
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-sec); font-size: 13px; }
+
         /* SLIDER CAPTCHA */
-        .slider-captcha { 
-            width: 100%; height: 55px; 
-            background: var(--bg-body); 
-            border-radius: 30px; 
-            position: relative; 
-            margin-bottom: 25px; 
-            overflow: hidden; 
-            border: 1px solid var(--border); 
-            user-select: none; 
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .slider-text { 
-            position: absolute; width: 100%; height: 100%; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 13px; font-weight: 500;
-            color: var(--text-sec); z-index: 1; letter-spacing: 0.5px;
-        }
-        .slider-handle { 
-            width: 55px; height: 53px; 
-            background: var(--bg-card); 
-            border-radius: 50%; 
-            position: absolute; top: 0; left: 0; 
-            cursor: pointer; z-index: 2; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 2px 0 8px rgba(0,0,0,0.15); 
-            transition: background 0.3s; 
-            border: 1px solid var(--border); 
-            color: var(--text-sec);
-        }
-        .slider-overlay { position: absolute; top: 0; left: 0; height: 100%; width: 0; background: var(--wa-primary); z-index: 0; opacity: 0.5; }
-        .captcha-success .slider-handle { background: var(--wa-primary); border-color: var(--wa-primary); color: white; }
-        .captcha-success .slider-overlay { width: 100% !important; transition: width 0.3s; opacity: 1; }
+        .slider-captcha { width: 100%; height: 50px; background: var(--input-bg); border-radius: 25px; position: relative; margin-bottom: 20px; overflow: hidden; }
+        .slider-handle { width: 50px; height: 50px; background: white; border-radius: 50%; position: absolute; top: 0; left: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: var(--text-sec); z-index: 2; }
+        .slider-text { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-sec); z-index: 1; }
+        .slider-overlay { position: absolute; top:0; left:0; height:100%; background: var(--ios-primary); opacity: 0.3; }
 
         /* TOAST */
-        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { 
-            background: var(--bg-card); 
-            color: var(--text-pri); 
-            padding: 15px 20px; 
-            border-radius: 10px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-            display: flex; align-items: center; gap: 15px; 
-            min-width: 280px; max-width: 320px;
-            border-left: 5px solid #ccc; 
-            animation: slideInRight 0.3s ease-out forwards; 
-            font-size: 14px; font-weight: 500;
-        }
-        .toast.success { border-left-color: var(--wa-secondary); }
-        .toast.error { border-left-color: var(--danger); }
-        
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-        @keyframes expandUp { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        .toast-container { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
+        .toast { background: rgba(50,50,50,0.9); color: white; backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-size: 14px; animation: fadeIn 0.3s; }
+
+        /* SPLASH & ANIMATIONS */
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .spin-anim { animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        
-        /* BOT LIST */
-        .bot-item { 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 15px; border-bottom: 1px solid var(--border); 
-            transition: 0.2s; background: var(--bg-body);
-            border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border);
-        }
-        .bot-item:hover { transform: scale(1.01); border-color: var(--wa-primary); }
-        .status-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; display: inline-block; margin-right: 8px; }
-        .status-online { background: #25D366; box-shadow: 0 0 8px #25D366; }
-        .pairing-code { 
-            font-family: monospace; font-size: 28px; letter-spacing: 6px; 
-            text-align: center; background: rgba(0, 168, 132, 0.1); 
-            padding: 20px; border-radius: 12px; 
-            color: var(--wa-primary); font-weight: bold; 
-            cursor: pointer; margin: 15px 0; border: 1px dashed var(--wa-primary);
-        }
-        
-        /* TIKTOK SLIDE GRID */
-        .slide-container {
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 10px; 
-            max-height: 300px; 
-            overflow-y: auto; 
-            margin: 15px 0;
-            padding-right: 5px;
-        }
-        .slide-item {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            aspect-ratio: 1/1;
-        }
-        .slide-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .slide-dl-btn {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 5px 10px;
-            border-top-left-radius: 10px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        /* Custom Scrollbar for slide */
-        .slide-container::-webkit-scrollbar { width: 5px; }
-        .slide-container::-webkit-scrollbar-thumb { background: var(--text-sec); border-radius: 10px; }
-
-        /* UTILS */
-        .d-none { display: none !important; }
-
-        /* LOADING SCREEN */
-        #loadingOverlay { 
-            position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: var(--bg-body); z-index: 9999; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            transition: opacity 0.5s ease; 
-        }
-        .wa-logo-icon { font-size: 90px; color: #25D366; margin-bottom: 20px; animation: pulse 2s infinite ease-in-out; }
-        .loading-bar-container { width: 180px; height: 5px; background: rgba(134, 150, 160, 0.3); border-radius: 5px; overflow: hidden; margin-bottom: 15px; }
-        .loading-bar { height: 100%; width: 30%; background: #25D366; border-radius: 5px; animation: loadingProgress 1.5s infinite ease-in-out; }
-        .loading-text { color: var(--text-sec); font-size: 15px; font-weight: 500; letter-spacing: 0.5px; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes loadingProgress { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
-
-        /* WA PROFILE CHECKER STYLE */
-        .wa-profile-header { display: flex; flex-direction: column; align-items: center; padding: 25px 0; border-bottom: 1px solid var(--border); position: relative; }
-        .wa-cover-area { width:100%; height: 120px; position:absolute; top:0; left:0; z-index:0; opacity:0.1; background:var(--wa-primary); }
-        .wa-profile-pic { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 5px solid var(--bg-card); background: #ccc; z-index:1; cursor:pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .wa-list-item { display: flex; padding: 18px; border-bottom: 1px solid var(--border); gap: 18px; align-items: center; }
-        .wa-list-item i { width: 20px; text-align: center; color: var(--text-sec); }
+        .ios-splash { position: fixed; inset: 0; background: var(--bg-body); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; transition: 0.3s; }
+        .splash-icon { font-size: 80px; color: var(--text-pri); margin-bottom: 20px; }
+        .splash-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .splash-sub { font-size: 13px; color: var(--text-sec); margin-bottom: 25px; }
+        .splash-progress { width: 180px; height: 6px; background: var(--input-bg); border-radius: 10px; overflow: hidden; }
+        .splash-bar { height: 100%; width: 0%; background: var(--ios-primary); animation: splashLoad 1.5s infinite; }
+        @keyframes splashLoad { 0% { width: 0%; } 50% { width: 80%; } 100% { width: 0%; } }
     </style>
 </head>
 <body class="dark-mode">
 
+    <!-- LOADING SCREEN -->
+    <div id="loadingOverlay" class="ios-splash">
+        <i class="fab fa-apple splash-icon"></i>
+        <h2 class="splash-title">WhatsApp Manager</h2>
+        <p class="splash-sub">Connecting to server…</p>
+        <div class="splash-progress"><div class="splash-bar" id="splashBar"></div></div>
+    </div>
+
     <!-- TOAST CONTAINER -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- LOADING SCREEN -->
-    <div id="loadingOverlay">
-        <i class="fab fa-whatsapp wa-logo-icon"></i>
-        <div class="loading-bar-container">
-            <div class="loading-bar"></div>
+    <!-- AUTH SCREEN -->
+    <div id="authScreen" class="auth-container d-none">
+        <div class="text-center">
+            <i class="fab fa-apple auth-logo"></i>
+            <h2 style="margin-bottom: 5px;">WhatsApp Manager</h2>
+            <p class="text-muted" style="margin-bottom: 40px;">Kelola Bot & Undian.</p>
         </div>
-        <p class="loading-text" id="loadingText">Menghubungkan...</p>
-        <div style="position: absolute; bottom: 40px; color: white; font-size: 15px; font-weight: 500;">
-            <i class="fab fa-meta"></i> Meta
-        </div>
-    </div>
 
-    <!-- AUTH MODAL -->
-    <div class="modal-overlay active" id="authModal" style="display: none;">
-        <div class="modal-box">
-            <div id="loginView">
-                <div class="auth-header">
-                    <i class="fab fa-whatsapp auth-logo"></i>
-                    <h3 class="auth-title">Selamat Datang</h3>
-                    <p style="font-size:14px; color:var(--text-sec)">Masuk untuk mengelola fitur whatsapp</p>
-                </div>
-                
-                <!-- NEON LINE LOGIN -->
-                <div class="neon-line"></div>
-                
-                <input id="u" class="form-input" placeholder="Username" autocomplete="off">
-                <input type="password" id="p" class="form-input" placeholder="Password">
-                
-                <div class="slider-captcha" id="captchaContainer">
-                    <div class="slider-overlay" id="sliderOverlay"></div>
-                    <div class="slider-text" id="sliderText">Geser tombol ke kanan <i class="fas fa-arrow-right" style="margin-left:5px"></i></div>
-                    <div class="slider-handle" id="sliderHandle"><i class="fas fa-chevron-right"></i></div>
-                </div>
-
-                <button onclick="login()" id="btnLogin" class="btn btn-primary btn-block" disabled>MASUK SEKARANG</button>
-                <div style="text-align:center; margin-top:25px; font-size:13px">
-                    <span style="color:var(--text-sec)">Belum punya akun?</span> <span style="color:var(--wa-primary); cursor:pointer; font-weight:bold" onclick="switchAuth('reg')">Daftar</span>
-                    <br><br>
-                    <span style="color:var(--text-sec); cursor:pointer; text-decoration:underline" onclick="switchAuth('reset')">Lupa Password?</span>
-                </div>
-            </div>
-
-            <!-- REGISTRATION -->
-            <div id="regForm" class="d-none">
-                <div class="auth-header">
-                     <i class="fas fa-user-plus auth-logo"></i>
-                    <h3 class="auth-title">Buat Akun</h3>
-                    <p style="font-size:14px; color:var(--text-sec)">Isi form di bawah ini</p>
-                </div>
-                <input id="ru" class="form-input" placeholder="Username Baru">
-                <input type="password" id="rp" class="form-input" placeholder="Password Baru">
-                <button onclick="reg()" class="btn btn-success btn-block">DAFTAR AKUN</button>
-                <div style="text-align:center; margin-top:20px; font-size:13px; color:var(--text-sec); cursor:pointer" onclick="switchAuth('login')"><i class="fas fa-arrow-left"></i> Kembali ke Login</div>
-            </div>
+        <div id="loginView">
+            <input id="u" class="form-input" placeholder="Username" autocomplete="off">
+            <input type="password" id="p" class="form-input" placeholder="Password">
             
-            <!-- RESET PASSWORD -->
-             <div id="resetForm" class="d-none">
-                <div class="auth-header">
-                     <i class="fas fa-lock-open auth-logo" style="color:var(--danger)"></i>
-                    <h3 class="auth-title">Reset Password</h3>
-                </div>
-                <input id="rUser" class="form-input" placeholder="Username">
-                <input id="rPhone" class="form-input" placeholder="Nomor Bot (Contoh: 628xxx)">
-                <input type="password" id="rNewPass" class="form-input" placeholder="Password Baru">
-                <button onclick="resetPass()" class="btn btn-danger btn-block">RESET PASSWORD</button>
-                <div style="text-align:center; margin-top:20px; font-size:13px; color:var(--text-sec); cursor:pointer" onclick="switchAuth('login')"><i class="fas fa-arrow-left"></i> Kembali</div>
+            <div class="slider-captcha" id="captchaContainer">
+                <div class="slider-overlay" id="sliderOverlay"></div>
+                <div class="slider-text" id="sliderText">Geser untuk verifikasi</div>
+                <div class="slider-handle" id="sliderHandle"><i class="fas fa-arrow-right"></i></div>
+            </div>
+
+            <button onclick="login()" id="btnLogin" class="btn btn-primary btn-block" disabled>Masuk</button>
+            <div class="text-center" style="margin-top: 20px;">
+                <span class="text-muted">Belum punya akun?</span> <a href="#" onclick="switchAuth('reg')" style="color: var(--ios-blue); font-weight: 600; text-decoration: none;">Daftar</a>
+            </div>
+            <div class="text-center" style="margin-top: 15px;">
+                <a href="#" onclick="switchAuth('reset')" style="color: var(--text-sec); font-size: 12px;">Lupa Password?</a>
             </div>
         </div>
-    </div>
 
-    <!-- ADD BOT MODAL -->
-    <div class="modal-overlay" id="addModal">
-        <div class="modal-box">
-            <h3 style="margin-bottom:20px; text-align:center"><i class="fab fa-whatsapp" style="color:var(--wa-primary)"></i> Tautkan WhatsApp</h3>
-            <div id="addStep1">
-                <p style="font-size:13px; color:var(--text-sec); margin-bottom:15px; text-align:center">Masukkan nomor bot yang ingin dijadikan server.</p>
-                <input id="botPhone" type="tel" class="form-input" placeholder="Format: (+62xxxx)" style="text-align:center; font-size:18px">
-                <div style="display:flex; gap:10px; margin-top:10px">
-                    <button onclick="reqPair()" class="btn btn-success btn-block">Dapatkan Kode</button>
-                    <button onclick="closeModal('addModal')" class="btn btn-outline">Batal</button>
-                </div>
-            </div>
-            <div id="addStep2" class="d-none" style="text-align:center">
-                <p style="color:var(--text-pri); font-weight:500">Buka WhatsApp > Perangkat Tertaut > Tautkan Perangkat</p>
-                <p style="font-size:12px; color:var(--text-sec); margin-top:5px">Masukkan kode di bawah ini:</p>
-                <div id="codeDisplay" class="pairing-code" onclick="copyCode()">...</div>
-                <div id="pairStatus" style="font-size:13px; color:var(--text-sec); margin-bottom:15px"><i class="fas fa-spinner fa-spin"></i> Menunggu koneksi...</div>
-                <button onclick="closeModal('addModal')" class="btn btn-outline btn-block">Tutup</button>
-            </div>
+        <div id="regForm" class="d-none">
+            <input id="ru" class="form-input" placeholder="Username Baru">
+            <input type="password" id="rp" class="form-input" placeholder="Password Baru">
+            <button onclick="reg()" class="btn btn-success btn-block">Buat Akun</button>
+            <button onclick="switchAuth('login')" class="btn btn-outline btn-block" style="margin-top: 10px;">Batal</button>
+        </div>
+
+        <div id="resetForm" class="d-none">
+             <input id="rUser" class="form-input" placeholder="Username">
+             <input id="rPhone" class="form-input" placeholder="Nomor Bot (628xxx)">
+             <input type="password" id="rNewPass" class="form-input" placeholder="Password Baru">
+             <button onclick="resetPass()" class="btn btn-danger btn-block">Reset</button>
+             <button onclick="switchAuth('login')" class="btn btn-outline btn-block" style="margin-top: 10px;">Batal</button>
         </div>
     </div>
 
     <!-- MAIN APP -->
     <div id="appContainer" class="d-none">
-        <div class="header">
-            <div class="header-logo"><i class="fab fa-whatsapp auth-wa"></i> WhatsApp</div>
-            <div class="header-actions">
-                <!-- Theme Toggle Moved Here -->
-                <button class="header-btn" onclick="toggleDarkMode()" title="Ganti Tema" id="themeToggleBtn">
-                    <i class="fas fa-sun"></i>
-                </button>
-                <button class="header-btn" onclick="manualRefresh()" title="Refresh"><i class="fas fa-sync-alt" id="refreshIcon"></i></button>
-                <button class="header-btn" onclick="logout()" title="Keluar" style="color:#ff6b6b"><i class="fas fa-sign-out-alt"></i></button>
+        <!-- HEADER -->
+        <div class="ios-header">
+            <div class="header-title">Dashboard</div>
+            <div style="display: flex; gap: 15px;">
+                <button class="header-btn" onclick="toggleDarkMode()" id="themeBtn"><i class="fas fa-moon"></i></button>
+                <button class="header-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
 
-        <div class="main-content">
-            <!-- DASHBOARD HOME -->
-            <div id="view-dash" class="view-section active">
-            	<!-- === IKLAN DOWNLOAD APLIKASI === -->
-                <div class="card" style="background: linear-gradient(135deg, var(--wa-primary) 0%, var(--wa-primary-dark) 100%); color: white; border: none; position: relative; margin-bottom: 15px; overflow: hidden;">
-                    <!-- Dekorasi Background -->
-                    <i class="fab fa-whatsapp" style="position: absolute; right: -20px; bottom: -30px; font-size: 100px; opacity: 0.1; transform: rotate(-15deg);"></i>
-                    
-                    <div style="display: flex; align-items: center; gap: 15px; position: relative; z-index: 2;">
-                        <!-- Icon Aplikasi -->
-                        <div style="background: white; border-radius: 12px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; color: var(--wa-primary-dark); font-size: 26px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                            <i class="fab fa-android"></i>
-                        </div>
-                        
-                        <!-- Teks -->
-                        <div style="flex: 1;">
-                            <h4 style="color: white; font-size: 15px; margin-bottom: 3px; font-weight: 700;">Pasang Aplikasi Kami!</h4>
-                            <p style="color: rgba(255,255,255,0.9); font-size: 11px; margin: 0; line-height: 1.3;">Akses bot lebih cepat, ringan & tanpa reload halaman. (gunakan browser untuk akses download)</p>
-                        </div>
-                        
-                        <!-- Tombol Download -->
-                        <a href="https://sfile.mobi/1dumaoRhBnq" target="_blank" class="btn" style="background: white; color: var(--wa-primary-dark); padding: 8px 12px; font-size: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); white-space: nowrap;">
-                            <i class="fas fa-download"></i> Instal
-                        </a>
-                    </div>
-
-                    <!-- Tombol Tutup Iklan -->
-                    <div onclick="this.parentElement.style.display='none'" style="position: absolute; top: 5px; right: 8px; cursor: pointer; opacity: 0.7; font-size: 14px; padding: 5px; z-index: 3; transition: 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
-                        <i class="fas fa-times"></i>
-                    </div>
+        <div class="content-container">
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dash" class="view-section">
+                
+                <!-- JAM WIDGET -->
+                <div class="widget-clock">
+                    <div class="clock-time" id="clockTime">00:00</div>
+                    <div class="clock-date" id="clockDate">Senin, 1 Januari 2024</div>
                 </div>
-                <!-- === END IKLAN === -->
-                <div class="card">
-                    <h3 style="margin-bottom:10px">💀 INFO : <a style="color:var(--wa-primary)" id="p_name" style="font-size:24px">-</a> </h3>
-                    
-                    <!-- NEON LINE STATUS -->
-                    <div class="neon-line"></div>
-                    
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; background:var(--bg-body); padding:10px 15px; border-radius:10px; border:1px solid var(--wa-secondary)">
-                         <span style="font-size:13px; color:var(--text-sec);">API Connection:</span>
-                         <span id="apiUrlDisplay" style="font-size:13px; font-weight:bold"><i class="fas fa-circle-notch fa-spin"></i> Loading...</span>
-                    </div>
 
-                    <div style="display:flex; justify-content:space-between; gap:10px">
-                        <div style="text-align:center; flex:1; background:var(--bg-body); padding:15px 5px; border-radius:12px; border:1px solid var(--wa-secondary)">
-                            <h2 id="totalBots" style="font-size:24px">0</h2><span style="font-size:11px; color:var(--text-sec)">TOTAL</span>
-                        </div>
-                        <div style="text-align:center; flex:1; background:var(--bg-body); padding:15px 5px; border-radius:12px; border:1px solid var(--wa-secondary)">
-                            <h2 id="activeBots" style="font-size:24px">0</h2><span style="font-size:11px; color:var(--text-sec)">AKTIF</span>
-                        </div>
-                        <div style="text-align:center; flex:1; background:var(--bg-body); padding:15px 5px; border-radius:12px; border:1px solid var(--wa-secondary)">
-                            <h2 id="myBots" style="font-size:24px">0</h2><span style="font-size:11px; color:var(--text-sec)">MILIKMU</span>
-                        </div>
+                <!-- NOTIFIKASI PEMENANG (HIDDEN BY DEFAULT) -->
+                <div id="winnerAlert" class="winner-alert d-none">
+                    <div style="font-size: 30px;"><i class="fas fa-trophy"></i></div>
+                    <div>
+                        <h3 style="font-size: 16px; margin-bottom: 5px; font-weight: 800;">SELAMAT! ANDA MENANG!</h3>
+                        <p style="font-size: 13px; line-height: 1.4;">
+                            Anda telah memenangkan undian <b id="winItemName">...</b>.<br>
+                            Harap hubungi admin: <br>
+                            <a href="https://wa.me/6283879950760" target="_blank" style="font-weight: 700; color: black; text-decoration: underline;">
+                                <i class="fab fa-whatsapp"></i> 6283879950760
+                            </a>
+                        </p>
                     </div>
                 </div>
 
-                <!-- FITUR GRID -->
-                <div class="card">
-                    <h3><i class="fas fa-bolt" style="color:#FFC107"></i> AKSES CEPAT</h3>
-                    <p style="font-size:13px; color:var(--text-sec); margin-top:5px;">Akses fitur bot secara instan.</p>
-                    <div class="feature-grid">
-                        <div class="feature-item" onclick="view('bots')">
-                            <i class="fas fa-robot"></i>
-                            <h4>Kelola Bot</h4>
-                            <p>Tambah/Hapus sesi</p>
-                        </div>
-                        <div class="feature-item" onclick="view('dl')">
-                            <i class="fas fa-cloud-download-alt"></i>
-                            <h4>Download</h4>
-                            <p>TikTok/IG/YT</p>
-                        </div>
-                        <div class="feature-item" onclick="view('check')">
-                            <i class="fas fa-search-location"></i>
-                            <h4>Stalking</h4>
-                            <p>Cek info nomor</p>
-                        </div>
-                        <div class="feature-item" onclick="view('guide')">
-                            <i class="fas fa-shield-alt"></i>
-                            <h4>Proteksi</h4>
-                            <p>Anti Delete/ViewOnce</p>
-                        </div>
+                <!-- SYSTEM STATS -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <i class="fas fa-memory stat-icon" style="color: var(--ios-blue);"></i>
+                        <div class="stat-value" id="ramVal">45%</div>
+                        <div class="stat-label">RAM</div>
+                        <div class="progress-mini"><div class="progress-fill" style="width: 45%; background: var(--ios-blue);"></div></div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-microchip stat-icon" style="color: var(--ios-red);"></i>
+                        <div class="stat-value" id="cpuVal">12%</div>
+                        <div class="stat-label">CPU</div>
+                        <div class="progress-mini"><div class="progress-fill" style="width: 12%; background: var(--ios-red);"></div></div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-battery-three-quarters stat-icon" style="color: var(--ios-primary);" id="battIcon"></i>
+                        <div class="stat-value" id="battVal">--%</div>
+                        <div class="stat-label">Baterai</div>
+                        <div class="progress-mini"><div class="progress-fill" id="battFill" style="width: 0%; background: var(--ios-primary);"></div></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- GUIDE PAGE -->
-            <div id="view-guide" class="view-section">
-                <div class="card">
-                    <h3><i class="fas fa-book-open"></i> Panduan Fitur</h3>
-                    <p style="font-size:13px; color:var(--text-sec); margin-bottom:20px;">Cara menggunakan fitur otomatis bot:</p>
-                    
-                    <div class="guide-item">
-                        <div class="guide-icon"><i class="fas fa-eye"></i></div>
-                        <div class="guide-content">
-                            <h4>RVO (Read View Once)</h4>
-                            <p>Balas pesan sekali lihat dengan mengetik titik dua <code>..</code>. Bot akan mengirim isinya ke chat pribadi Anda.</p>
+                <!-- USER CARD & BALANCE -->
+                <div class="card" style="display: flex; align-items: center; gap: 15px; padding: 15px; margin-bottom: 10px;">
+                    <img id="p_img" src="https://ui-avatars.com/api/?name=User&background=random" style="width: 50px; height: 50px; border-radius: 50%;">
+                    <div style="flex: 1;">
+                        <div id="p_name" style="font-weight: 600; font-size: 16px;">Pengguna</div>
+                        <div id="p_role" style="font-size: 12px; color: var(--text-sec); text-transform: uppercase;">User</div>
+                        <!-- BALANCE DISPLAY -->
+                        <div style="margin-top: 5px; font-size: 14px; font-weight: 500; color: var(--ios-primary); display: flex; align-items: center; gap: 5px;">
+                            <span>Saldo: <span id="userBalance">Rp 0</span></span>
+                            <button onclick="openModal('topupModal')" style="border: none; background: var(--ios-primary); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;"><i class="fas fa-plus"></i></button>
                         </div>
                     </div>
-
-                    <div class="guide-item">
-                        <div class="guide-icon"><i class="fas fa-circle-notch"></i></div>
-                        <div class="guide-content">
-                            <h4>SW Saver</h4>
-                            <p>Balas status/story WhatsApp teman dengan <code>..</code> untuk menyimpannya ke galeri.</p>
-                        </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px; color: var(--text-sec);">Bots</div>
+                        <div id="activeBots" style="font-weight: 700; font-size: 18px; color: var(--ios-primary);">0</div>
                     </div>
+                </div>
 
-                    <div class="guide-item">
-                        <div class="guide-icon"><i class="fas fa-history"></i></div>
-                        <div class="guide-content">
-                            <h4>Anti Hapus Pesan</h4>
-                            <p>Otomatis aktif. Bot akan mengirim ulang pesan yang dihapus teman ke chat Anda.</p>
+                <!-- MENU LIST -->
+                <div class="ios-list">
+                    <div class="ios-item" onclick="view('bots')">
+                        <div style="display: flex; align-items: center;">
+                            <div class="ios-icon" style="background: linear-gradient(135deg, #34C759, #30B0C7);"><i class="fas fa-robot"></i></div>
+                            <span style="font-weight: 500;">Kelola Bot</span>
                         </div>
+                        <i class="fas fa-chevron-right" style="color: var(--text-sec); font-size: 12px;"></i>
                     </div>
-
-                    <div class="guide-item">
-                        <div class="guide-icon"><i class="fas fa-user-shield"></i></div>
-                        <div class="guide-content">
-                            <h4>Anti Banned System</h4>
-                            <p>Algoritma "Human Behavior" untuk meminimalisir risiko blokir dari WhatsApp.</p>
+                    <div class="ios-item" onclick="view('dl')">
+                        <div style="display: flex; align-items: center;">
+                            <div class="ios-icon" style="background: linear-gradient(135deg, #007AFF, #5856D6);"><i class="fas fa-cloud-download-alt"></i></div>
+                            <span style="font-weight: 500;">Downloader</span>
                         </div>
+                        <i class="fas fa-chevron-right" style="color: var(--text-sec); font-size: 12px;"></i>
+                    </div>
+                    <div class="ios-item" onclick="view('lotto')">
+                        <div style="display: flex; align-items: center;">
+                            <div class="ios-icon" style="background: linear-gradient(135deg, #AF52DE, #FF2D55);"><i class="fas fa-gift"></i></div>
+                            <span style="font-weight: 500;">Undian Berhadiah</span>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color: var(--text-sec); font-size: 12px;"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- BOT LIST VIEW -->
-            <div id="view-bots" class="view-section">
+            <!-- VIEW: BOTS -->
+            <div id="view-bots" class="view-section d-none">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 18px;">Daftar Sesi</h3>
+                    <button onclick="openModal('addModal')" class="btn btn-primary" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-plus"></i> Tambah</button>
+                </div>
+                <div id="botListContainer"></div>
+            </div>
+
+            <!-- VIEW: DOWNLOADER -->
+            <div id="view-dl" class="view-section d-none">
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-                        <h3><i class="fas fa-list-ul"></i> Daftar Bot</h3>
-                        <button onclick="openModal('addModal')" class="btn btn-primary" style="font-size:12px; padding: 8px 15px;"><i class="fas fa-plus"></i> Tambah Baru</button>
-                    </div>
-                    <div id="botListContainer">
-                        <div style="text-align:center; padding:40px; color:var(--text-sec)">
-                            <i class="fas fa-circle-notch fa-spin" style="font-size:24px"></i><br><br>Memuat data...
-                        </div>
+                    <h3 style="margin-bottom: 10px;">Media Downloader</h3>
+                    <p class="text-muted" style="margin-bottom: 15px;">TikTok, Instagram, YouTube</p>
+                    <input id="dlUrl" class="form-input" placeholder="Tempel tautan di sini...">
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="doDownload('mp4')" class="btn btn-primary btn-block" id="btnMp4">Video</button>
+                        <button onclick="doDownload('mp3')" class="btn btn-success btn-block" id="btnMp3">Musik</button>
                     </div>
                 </div>
+                <div id="dlResult" style="margin-top: 15px;"></div>
             </div>
 
-            <!-- DOWNLOADER -->
-            <div id="view-dl" class="view-section">
-                <div class="card">
-                    <h3><i class="fas fa-download"></i> Media Downloader</h3>
-                    <p style="font-size:13px; color:var(--text-sec); margin-bottom:15px">Support: TikTok (No WM), Instagram, YouTube, Facebook.</p>
-                    <input id="dlUrl" class="form-input" placeholder="Tempel Link di sini..." style="padding:15px">
-                    <div style="display:flex; gap:10px">
-                        <button onclick="doDownload('mp4')" class="btn btn-primary btn-block" id="btnMp4"><i class="fas fa-video"></i> Video</button>
-                        <button onclick="doDownload('mp3')" class="btn btn-success btn-block" id="btnMp3"><i class="fas fa-music"></i> Audio</button>
-                    </div>
-                    <div id="dlResult" style="margin-top:20px; text-align:center"></div>
-                </div>
-            </div>
-
-            <!-- CHECK NUMBER -->
-            <div id="view-check" class="view-section">
-                <div class="card">
-                    <h3><i class="fas fa-search"></i> Cek Informasi Nomor</h3>
-                    <div style="display:flex; gap:10px; margin-top:15px">
-                        <input id="checkPhone" class="form-input" placeholder="Contoh: 628123xxxx" style="margin-bottom:0">
-                        <button onclick="doCheck()" class="btn btn-primary" id="btnCheck" style="border-radius:12px; padding:0 20px"><i class="fas fa-arrow-right"></i></button>
-                    </div>
-                    <p style="font-size:11px; color:var(--text-sec); margin-top:8px; margin-left:5px">*Cek status online, foto profil HD, & info bio.</p>
-                </div>
-                <div id="checkResult"></div>
-            </div>
-
-            <!-- PROFILE -->
-            <div id="view-profile" class="view-section">
-                <div class="card" style="text-align:center; padding-top:40px">
-                    <img id="p_img" src="" style="width:120px; height:120px; border-radius:50%; margin-bottom:15px; border:4px solid var(--wa-primary); box-shadow: 0 5px 15px rgba(0,0,0,0.2)">
-                    <h2 id="p_name" style="font-size:24px">-</h2>
-                    <span id="p_role" style="background:var(--wa-secondary); color:#fff; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:bold; letter-spacing:1px; margin-top:5px; display:inline-block">USER</span>
-                    
-                    <div style="text-align:left; margin-top:30px; background:var(--bg-body); border-radius:12px; overflow:hidden; border:1px solid var(--border)">
-                        <div class="wa-list-item">
-                            <i class="fas fa-fingerprint"></i>
-                            <div>
-                                <div style="font-size:12px; color:var(--text-sec)">User ID</div>
-                                <div id="p_uid" style="font-weight:500">-</div>
-                            </div>
-                        </div>
-                        <div class="wa-list-item" style="border-bottom:none">
-                            <i class="fas fa-calendar-alt"></i>
-                            <div>
-                                <div style="font-size:12px; color:var(--text-sec)">Terdaftar Sejak</div>
-                                <div id="p_join" style="font-weight:500">-</div>
-                            </div>
-                        </div>
+            <!-- VIEW: LOTTERY -->
+            <div id="view-lotto" class="view-section d-none">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 18px;">Undian Aktif</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="btnManageTopup" onclick="manageTopups()" class="btn btn-primary d-none" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-wallet"></i> Cek Topup</button>
+                        <button id="btnCreateLotto" onclick="openModal('createLottoModal')" class="btn btn-purple d-none" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-plus"></i> Barang</button>
                     </div>
                 </div>
-            </div>
-
-            <!-- DONATION -->
-            <div id="view-donate" class="view-section">
-                <div class="card" style="text-align:center">
-                    <h3><i class="fas fa-heart" style="color:#e91e63"></i> Support Developer</h3>
-                    <p style="color:var(--text-sec); font-size:13px; margin:10px 0 20px 0;">Server butuh biaya sewa agar tetap online 24 jam. Bantuan Anda sangat berarti.</p>
-                    
-                    <div style="background:#fff; padding:15px; border-radius:12px; display:inline-block; margin-bottom:15px; border:1px solid #ddd">
-                        <a href="https://ibb.co.com/n83XRHvP"><img src="https://i.ibb.co.com/Qj8WX2RD/1764589851057.png" alt="QRIS" style="width:100%; max-width:200px; display:block"></a>
-                    </div>
-                    
-                    <div style="background:rgba(0,168,132,0.1); padding:15px; border-radius:12px; margin-top:10px; border-left: 4px solid var(--wa-primary)">
-                        <p style="font-style:italic; font-size:14px; color:var(--text-pri)">"Sedekah tidak akan mengurangi harta, justru akan menambah keberkahan."</p>
-                    </div>
-                    
-                    <button class="btn btn-outline btn-block" style="margin-top:20px" onclick="window.open('https://i.ibb.co.com/k63LMRfm/1764589851057.png')"><i class="fas fa-external-link-alt"></i> Buka Link Saweria / Trakteer</button>
+                <div id="lotteryListContainer">
+                    <div class="text-center text-muted" style="padding: 30px;">Memuat data undian...</div>
                 </div>
             </div>
         </div>
+        
+        <!-- BOTTOM NAVIGATION -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="view('dash')" id="nav-dash"><i class="fas fa-home"></i><span>Home</span></div>
+            <div class="nav-item" onclick="view('bots')" id="nav-bots"><i class="fas fa-robot"></i><span>Bots</span></div>
+            <div class="nav-item" onclick="view('dl')" id="nav-dl"><i class="fas fa-download"></i><span>Unduh</span></div>
+            <div class="nav-item" onclick="view('lotto')" id="nav-lotto"><i class="fas fa-gift"></i><span>Undian</span></div>
+        </div>
+    </div>
 
-        <!-- FLOATING MENU (SIDEBAR) -->
-        <button class="floating-menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
-        <div class="floating-menu" id="floatingMenu">
-            <div class="menu-item active" onclick="view('dash')"><i class="fas fa-home"></i> Dashboard</div>            
-            <div class="menu-item" onclick="view('bots')"><i class="fas fa-robot"></i> Bot Manager</div>
-            <div class="menu-item" onclick="view('dl')"><i class="fas fa-cloud-download-alt"></i> Downloader</div>
-            <div class="menu-item" onclick="view('check')"><i class="fas fa-search"></i> Cek Nomor</div>
-            <div class="menu-item" onclick="view('profile')"><i class="fas fa-user-circle"></i> Profil Saya</div>
-            <div class="menu-item" onclick="view('guide')"><i class="fas fa-book"></i> Panduan</div>
-            <div class="menu-item" onclick="view('donate')"><i class="fas fa-donate"></i> Donasi</div>
-            <!-- Theme toggle removed from here -->
+    <!-- MODAL ADD BOT -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-box">
+            <div class="modal-handle"></div>
+            <h3 class="text-center" style="margin-bottom: 20px;">Tautkan Perangkat</h3>
+            <div id="addStep1">
+                <input id="botPhone" type="tel" class="form-input" placeholder="Nomor: 628xxxxx" style="text-align: center; font-size: 18px; letter-spacing: 1px;">
+                <button onclick="reqPair()" class="btn btn-success btn-block" style="margin-bottom: 10px;">Dapatkan Kode</button>
+                <button onclick="closeModal('addModal')" class="btn btn-outline btn-block">Batal</button>
+            </div>
+            <div id="addStep2" class="d-none text-center">
+                <p class="text-muted">Masukkan kode ini di WhatsApp Anda:</p>
+                <div id="codeDisplay" style="font-family: monospace; font-size: 32px; letter-spacing: 5px; margin: 20px 0; font-weight: bold; color: var(--ios-primary);" onclick="copyCode()">...</div>
+                <div id="pairStatus" class="text-muted" style="margin-bottom: 20px;">Menunggu koneksi...</div>
+                <button onclick="closeModal('addModal')" class="btn btn-outline btn-block">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TOP UP REQUEST -->
+    <div class="modal-overlay" id="topupModal">
+        <div class="modal-box">
+            <div class="modal-handle"></div>
+            <h3 class="text-center" style="margin-bottom: 10px;">Isi Saldo</h3>
+            <p class="text-center text-muted" style="margin-bottom: 20px;">Minimal Rp 1.000</p>
+            
+            <input id="tpAmount" type="number" class="form-input" placeholder="Nominal (Cth: 20000)">
+            <input id="tpSender" class="form-input" placeholder="Nama Pengirim">
+            <input id="tpBank" class="form-input" placeholder="Nama Bank / E-Wallet">
+            
+            <div class="card" style="padding: 15px; text-align: center; margin-bottom: 15px;">
+                <p class="text-muted" style="font-size: 12px; margin-bottom: 5px;">Scan QRIS di bawah untuk transfer</p>
+                <img src="https://i.ibb.co.com/Qj8WX2RD/1764589851057.png" style="width: 150px; border-radius: 10px;">
+            </div>
+
+            <button onclick="submitTopup()" class="btn btn-success btn-block" style="margin-bottom: 10px;">Konfirmasi Transfer</button>
+            <button onclick="closeModal('topupModal')" class="btn btn-outline btn-block">Batal</button>
+        </div>
+    </div>
+    
+    <!-- MODAL MANAGE TOPUPS (ADMIN) -->
+    <div class="modal-overlay" id="manageTopupModal">
+        <div class="modal-box">
+            <div class="modal-handle"></div>
+            <h3 class="text-center" style="margin-bottom: 20px;">Permintaan Top Up</h3>
+            <div id="topupList"></div>
+            <button onclick="closeModal('manageTopupModal')" class="btn btn-outline btn-block" style="margin-top: 20px;">Tutup</button>
+        </div>
+    </div>
+
+    <!-- MODAL CREATE LOTTERY (ADMIN) -->
+    <div class="modal-overlay" id="createLottoModal">
+        <div class="modal-box">
+            <div class="modal-handle"></div>
+            <h3 class="text-center" style="margin-bottom: 20px;">Tambah Barang</h3>
+            <input id="newItemName" class="form-input" placeholder="Nama Barang (contoh: iPhone 15)">
+            <input id="newItemImg" class="form-input" placeholder="URL Gambar (Gunakan Direct Link ibb.co.com)">            
+            <input id="newItemTarget" type="number" class="form-input" placeholder="Target Dana (Rp)">           
+            <button onclick="createLotteryItem()" class="btn btn-purple btn-block" style="margin-bottom: 10px;">Posting Barang</button>
+            <button onclick="closeModal('createLottoModal')" class="btn btn-outline btn-block">Batal</button>
+        </div>
+    </div>
+
+    <!-- MODAL MANAGE PARTICIPANTS (ADMIN) -->
+    <div class="modal-overlay" id="manageLottoModal">
+        <div class="modal-box">
+            <div class="modal-handle"></div>
+            <h3 class="text-center" style="margin-bottom: 10px;">Kelola Peserta</h3>
+            <p id="manageTitle" class="text-center text-muted" style="margin-bottom: 20px;">...</p>
+            <div id="participantList" style="margin-bottom: 20px;"></div>
+            <button id="btnSpin" class="btn btn-purple btn-block" style="margin-bottom: 10px;">Kocok Pemenang</button>
+            <button id="btnDelete" class="btn btn-danger btn-block" style="margin-bottom: 10px;">Hapus Undian</button>
+            <button onclick="closeModal('manageLottoModal')" class="btn btn-outline btn-block">Tutup</button>
+        </div>
+    </div>
+
+    <!-- MODAL JOIN (INPUT DATA) -->
+    <div class="modal-overlay" id="joinLottoModal">
+        <div class="modal-box">
+            <div class="modal-handle"></div>
+            <h3 class="text-center" style="margin-bottom: 10px;">Ikut Patungan</h3>
+            <p id="joinItemTitle" class="text-center text-muted" style="margin-bottom: 20px;">...</p>
+            
+            <label class="text-muted" style="font-size: 12px;">Nominal Patungan (Rp)</label>
+            <input id="joinAmount" type="number" class="form-input" placeholder="Min 1.000" value="1000">
+            
+            <label class="text-muted" style="font-size: 12px;">Nomor WhatsApp Anda</label>
+            <input id="joinPhone" type="tel" class="form-input" placeholder="628xxxx (Untuk konfirmasi)">
+            
+            <input type="hidden" id="joinItemId">
+            
+            <div class="text-center text-muted" style="font-size: 12px; margin-bottom: 15px;">
+                Saldo Anda: <b id="joinCurrentBalance">Rp 0</b>
+            </div>
+
+            <button onclick="confirmJoinWallet()" class="btn btn-success btn-block" style="margin-bottom: 10px;">Bayar dengan Saldo</button>
+            <button onclick="closeModal('joinLottoModal')" class="btn btn-outline btn-block">Batal</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // KONFIGURASI
+        // KONFIGURASI API
         // ==========================================
         const BIN_ID = '693151eed0ea881f40121ca6'; 
         const BIN_KEY = '$2a$10$u00Qvq6xrri32tc7bEYVhuQv94XS.ygeVCr70UDbzoOVlR8yLuUq.'; 
@@ -750,566 +550,461 @@
         
         let API_URL = '';
         let TOKEN = localStorage.getItem('auth_token');
+        let USER_ROLE = 'user'; 
+        let USER_NAME = 'User';
+        let USER_BALANCE = 0;
+        let USER_PHONE_CACHE = '';
         let isConnected = false;
-        let isAppReady = false;
         let isCaptchaVerified = false;
 
-        async function init() {
-            // Set initial theme icon
-            const isDark = document.body.classList.contains('dark-mode');
-            const themeBtn = document.getElementById('themeToggleBtn');
-            if(themeBtn) themeBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-
-            initSliderCaptcha();
-            showSplashScreen("Menghubungkan...");
-            await checkServerUrl();
-        }
-
-        // --- TOAST NOTIFICATION ---
-        function showToast(message, type = 'error') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
-            toast.innerHTML = `<i class="fas ${icon}" style="font-size:20px"></i> <span>${message}</span>`;
-            container.appendChild(toast);
-            
-            // Auto remove
-            setTimeout(() => {
-                toast.style.animation = 'fadeOutRight 0.3s ease-in forwards';
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
-
-        // --- CAPTCHA ---
-        function initSliderCaptcha() {
-            const handle = document.getElementById('sliderHandle');
-            const container = document.getElementById('captchaContainer');
-            const overlay = document.getElementById('sliderOverlay');
-            const text = document.getElementById('sliderText');
-            let isDragging = false;
-            let startX;
-
-            function startDrag(e) {
-                if(isCaptchaVerified) return;
-                isDragging = true;
-                startX = (e.touches ? e.touches[0].clientX : e.clientX);
-                handle.style.transition = 'none';
-                overlay.style.transition = 'none';
+        // --- CLOCK & BATTERY ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clockTime').innerText = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }).replace('.', ':');
+            document.getElementById('clockDate').innerText = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+            if(Math.random() > 0.7) {
+                const cpu = Math.floor(Math.random() * (40-5)+5);
+                const ram = Math.floor(Math.random() * (60-30)+30);
+                document.getElementById('cpuVal').innerText = cpu+'%';
+                document.getElementById('ramVal').innerText = ram+'%';
+                document.querySelectorAll('.stat-card')[0].querySelector('.progress-fill').style.width = ram+'%';
+                document.querySelectorAll('.stat-card')[1].querySelector('.progress-fill').style.width = cpu+'%';
             }
-
-            function doDrag(e) {
-                if (!isDragging || isCaptchaVerified) return;
-                let clientX = (e.touches ? e.touches[0].clientX : e.clientX);
-                let x = clientX - startX;
-                let max = container.offsetWidth - handle.offsetWidth;
-                if (x < 0) x = 0;
-                if (x > max) x = max;
-                handle.style.left = x + 'px';
-                overlay.style.width = (x + 25) + 'px';
-                overlay.style.opacity = 0.5 + (0.5 * (x / max));
-                if (x >= max - 5) verifyCaptcha();
-            }
-
-            function stopDrag() {
-                if(isCaptchaVerified) return;
-                isDragging = false;
-                handle.style.transition = '0.3s';
-                overlay.style.transition = '0.3s';
-                handle.style.left = '0px';
-                overlay.style.width = '0px';
-            }
-
-            function verifyCaptcha() {
-                isCaptchaVerified = true;
-                isDragging = false;
-                container.classList.add('captcha-success');
-                handle.style.left = (container.offsetWidth - handle.offsetWidth) + 'px';
-                handle.innerHTML = '<i class="fas fa-check"></i>';
-                text.innerText = "Terverifikasi";
-                text.style.color = "white";
-                document.getElementById('btnLogin').disabled = false;
-            }
-
-            handle.addEventListener('mousedown', startDrag);
-            handle.addEventListener('touchstart', startDrag);
-            document.addEventListener('mousemove', doDrag);
-            document.addEventListener('touchmove', doDrag);
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchend', stopDrag);
         }
-
-        function resetCaptcha() {
-            isCaptchaVerified = false;
-            const handle = document.getElementById('sliderHandle');
-            const container = document.getElementById('captchaContainer');
-            const overlay = document.getElementById('sliderOverlay');
-            const text = document.getElementById('sliderText');
-            const btn = document.getElementById('btnLogin');
-            container.classList.remove('captcha-success');
-            handle.style.left = '0';
-            handle.innerHTML = '<i class="fas fa-chevron-right"></i>';
-            overlay.style.width = '0';
-            text.innerText = "Geser tombol ke kanan";
-            text.style.color = "var(--text-sec)";
-            btn.disabled = true;
-        }
-
-        // --- CONNECTIVITY ---
-        async function checkServerUrl() {
-            const statusText = document.getElementById('apiUrlDisplay');
-
+        async function updateBattery() {
             try {
-                const jsonRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=${new Date().getTime()}`, {
-                    headers: { 'X-Master-Key': BIN_KEY }
-                });
-                
-                if (!jsonRes.ok) throw new Error("Bin Error");
-                const data = await jsonRes.json();
-                let newUrl = data.record.url.trim().replace(/\/$/, "");
-                if (!newUrl.startsWith('http')) newUrl = 'http://' + newUrl;
-                API_URL = newUrl;
-
-                // Ping Check
-                const controller = new AbortController();
-                setTimeout(() => controller.abort(), 5000); 
-                const ping = await fetch(API_URL + '/', { method: 'GET', mode: 'cors', signal: controller.signal });
-
-                if (ping.ok || ping.status === 200 || ping.status === 404) {
-                    isConnected = true;
-                    hideSplashScreen();
-                    if(statusText) {
-                        statusText.innerHTML = '<span style="color:#25D366"><i class="fas fa-circle"></i> Online</span>';
-                    }
-                } else throw new Error("Ping status: " + ping.status);
-
-            } catch (e) {
-                console.log("Connect Error:", e.message);
-                isConnected = false;
-                if (!isAppReady) {
-                    showSplashScreen("Maintenance Mode");
-                    document.getElementById('loadingText').innerText = "Server Offline";
-                    document.getElementById('loadingText').style.color = "var(--danger)";
+                if(navigator.getBattery) {
+                    const b = await navigator.getBattery();
+                    const up = () => {
+                        const l = Math.round(b.level*100);
+                        document.getElementById('battVal').innerText = l+'%';
+                        document.getElementById('battFill').style.width = l+'%';
+                        const i = document.getElementById('battIcon');
+                        if(b.charging) i.className = "fas fa-bolt stat-icon";
+                        else if(l>75) i.className = "fas fa-battery-full stat-icon";
+                        else if(l>50) i.className = "fas fa-battery-three-quarters stat-icon";
+                        else if(l>25) i.className = "fas fa-battery-half stat-icon";
+                        else i.className = "fas fa-battery-quarter stat-icon";
+                    };
+                    up(); b.addEventListener('levelchange', up); b.addEventListener('chargingchange', up);
                 } else {
-                    if(statusText) {
-                        statusText.innerHTML = '<span style="color:var(--danger)"><i class="fas fa-circle"></i> Offline</span>';
-                    }
+                    document.getElementById('battVal').innerText = '100%'; document.getElementById('battFill').style.width = '100%';
                 }
-            }
+            } catch(e){}
+        }
+        setInterval(updateClock, 1000); updateClock(); updateBattery();
+
+        // --- INIT ---
+        (function() {
+            const th = localStorage.getItem('theme');
+            if(th==='dark') document.body.classList.add('dark-mode');
+            else if(th==='light') document.body.classList.remove('dark-mode');
+        })();
+
+        window.onload = async () => {
+            const isDark = document.body.classList.contains('dark-mode');
+            const btn = document.getElementById('themeBtn');
+            if(btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            initSliderCaptcha(); await checkServerUrl();
+        };
+
+        function initSliderCaptcha() {
+            const h = document.getElementById('sliderHandle');
+            const c = document.getElementById('captchaContainer');
+            const o = document.getElementById('sliderOverlay');
+            const t = document.getElementById('sliderText');
+            let drag = false, startX;
+            const start = (e) => { if(isCaptchaVerified) return; drag = true; startX = (e.touches?e.touches[0].clientX:e.clientX); h.style.transition='none'; o.style.transition='none'; };
+            const move = (e) => {
+                if(!drag || isCaptchaVerified) return;
+                let x = (e.touches?e.touches[0].clientX:e.clientX) - startX;
+                let max = c.offsetWidth - h.offsetWidth;
+                if(x<0) x=0; if(x>max) x=max;
+                h.style.left = x+'px'; o.style.width = (x+25)+'px';
+                if(x>=max-5) { isCaptchaVerified=true; drag=false; h.innerHTML='<i class="fas fa-check" style="color:var(--ios-primary)"></i>'; t.innerText="Terverifikasi"; document.getElementById('btnLogin').disabled=false; }
+            };
+            const stop = () => { if(isCaptchaVerified) return; drag=false; h.style.transition='0.3s'; o.style.transition='0.3s'; h.style.left='0px'; o.style.width='0px'; };
+            h.addEventListener('mousedown', start); h.addEventListener('touchstart', start);
+            document.addEventListener('mousemove', move); document.addEventListener('touchmove', move);
+            document.addEventListener('mouseup', stop); document.addEventListener('touchend', stop);
         }
 
-        function showSplashScreen(msg) {
-            const loader = document.getElementById('loadingOverlay');
-            loader.style.display = 'flex';
-            document.getElementById('loadingText').innerText = msg;
-        }
-
-        function hideSplashScreen() {
-            const loader = document.getElementById('loadingOverlay');
-            if (loader.style.display !== 'none') {
-                isAppReady = true;
-                if (!TOKEN) document.getElementById('authModal').style.display = 'flex';
-                else checkAuthState();
-                document.getElementById('loadingText').innerText = "Terhubung!";
-                setTimeout(() => { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 500); }, 500);
-            }
-        }
-
-        function checkAuthState() {
-            document.getElementById('authModal').style.display = 'none';
-            document.getElementById('appContainer').classList.remove('d-none');
-            loadData(); 
-        }
-
-        async function api(path, method = 'GET', body = null) {
-            if (!API_URL || !isConnected) return { success: false, message: 'Server Offline' };
-            
-            const opts = { method, headers: { 'Content-Type': 'application/json' } };
-            if (TOKEN) opts.headers['Authorization'] = 'Bearer ' + TOKEN;
-            if (body) opts.body = JSON.stringify(body);
-            
+        // --- CORE API ---
+        async function checkServerUrl() {
             try {
-                const res = await fetch(API_URL + path, opts);
-                
-                // === PERBAIKAN DI SINI ===
-                // Jika status 401 (Unauthorized) DAN bukan sedang mencoba login, baru logout.
-                // Jika sedang login (/api/login) dan error 401 (salah pass), biarkan lewat agar ditangani fungsi login().
-                if (res.status === 401 && path !== '/api/login') { 
-                    logout(); 
-                    return { success: false, message: 'Sesi habis.' }; 
+                const j = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Master-Key': BIN_KEY } });
+                const d = await j.json();
+                let u = d.record.url.trim().replace(/\/$/, ""); if(!u.startsWith('http')) u='http://'+u; API_URL=u;
+                const p = await fetch(API_URL + '/');
+                if(p.ok || p.status===200 || p.status===404) {
+                    isConnected=true; document.getElementById('loadingOverlay').classList.add('d-none');
+                    if(TOKEN) checkAuthState(); else document.getElementById('authScreen').classList.remove('d-none');
+                } else throw new Error();
+            } catch(e) {
+                isConnected=false; document.querySelector('.splash-sub').innerText = "Server Offline"; document.querySelector('.splash-sub').style.color="var(--ios-red)";
+            }
+        }
+        function checkAuthState() {
+            document.getElementById('authScreen').classList.add('d-none'); document.getElementById('appContainer').classList.remove('d-none'); loadData();
+        }
+        async function api(path, method='GET', body=null) {
+            if(!API_URL||!isConnected) return {success:false, message:'Offline'};
+            const o = { method, headers: { 'Content-Type': 'application/json' } };
+            if(TOKEN) o.headers['Authorization'] = 'Bearer '+TOKEN; if(body) o.body = JSON.stringify(body);
+            try { const r = await fetch(API_URL+path, o); if(r.status===401 && path!=='/api/login') { logout(); return {success:false}; } return await r.json(); } catch(e) { return {success:false, message:'Error'}; }
+        }
+
+        // --- LOGIN & DATA ---
+        async function login() {
+            if(!isCaptchaVerified) return showToast('Captcha!');
+            const res = await api('/api/login', 'POST', {user:document.getElementById('u').value, pass:document.getElementById('p').value});
+            if(res.success) { TOKEN=res.token; localStorage.setItem('auth_token', TOKEN); checkAuthState(); } else showToast(res.message);
+        }
+        
+        async function loadData() {
+            const d = await api('/api/data');
+            if(!d || !d.user) return;
+            USER_ROLE = d.role; USER_NAME = d.user;
+            
+            await checkWinnerStatus();
+
+            document.getElementById('activeBots').innerText = d.activeBots?d.activeBots.length:0;
+            if(USER_ROLE === 'admin') {
+                document.getElementById('btnCreateLotto').classList.remove('d-none');
+                document.getElementById('btnManageTopup').classList.remove('d-none');
+            }
+            
+            const c = document.getElementById('botListContainer');
+            const sess = d.role==='admin' ? d.sessions : d.sessions.filter(s=>d.meta[s]?.owner===d.user);
+            c.innerHTML = '';
+            if(sess.length===0) c.innerHTML = `<div class="text-center text-muted" style="padding:20px">Tidak ada bot aktif.</div>`;
+            sess.forEach(s => {
+                const act = d.activeBots.includes(s);
+                c.innerHTML += `<div class="ios-list"><div class="ios-item" style="cursor:default"><div style="display:flex; align-items:center;"><div class="ios-icon" style="background:${act?'linear-gradient(135deg, #34C759, #30B0C7)':'var(--ios-gray)'}"><i class="fas ${act?'fa-wifi':'fa-slash'}"></i></div><div><div style="font-weight:600">+${s}</div><div class="text-muted" style="font-size:11px">${act?'Online':'Offline'}</div></div></div><div style="display:flex; gap:8px">${act?`<button onclick="action('${s}','stop')" class="btn btn-outline" style="padding:8px 12px"><i class="fas fa-stop"></i></button>`:`<button onclick="action('${s}','start')" class="btn btn-success" style="padding:8px 12px"><i class="fas fa-play"></i></button>`}<button onclick="action('${s}','delete')" class="btn btn-danger" style="padding:8px 12px"><i class="fas fa-trash"></i></button></div></div></div>`;
+            });
+
+            if(document.getElementById('p_name').innerText==='Pengguna') {
+                const p = await api('/api/profile');
+                if(p.name) {
+                    document.getElementById('p_name').innerText = p.name;
+                    document.getElementById('p_role').innerText = p.role;
+                    document.getElementById('p_img').src = p.photoUrl || `https://ui-avatars.com/api/?name=${p.name}`;
+                    // Update Balance
+                    USER_BALANCE = p.balance || 0;
+                    document.getElementById('userBalance').innerText = formatRupiah(USER_BALANCE);
+                    if(p.phone) USER_PHONE_CACHE = p.phone;
                 }
-                
-                return await res.json();
-            } catch (e) { 
-                return { success: false, message: 'Gagal menghubungi server' }; 
+            } else {
+                 // Refresh balance only if profile already loaded
+                 const p = await api('/api/profile');
+                 USER_BALANCE = p.balance || 0;
+                 document.getElementById('userBalance').innerText = formatRupiah(USER_BALANCE);
             }
         }
 
-        // --- AUTH & LOGIN LOGIC (IMPROVED) ---
-        async function login() {
-            if (!isCaptchaVerified) return showToast("Selesaikan verifikasi captcha!", "error");
+        async function checkWinnerStatus() {
+            try {
+                const res = await api('/api/lottery');
+                if(!res.success || !res.data) return;
+                const wonItem = res.data.find(item => {
+                    if(!item.winner) return false;
+                    return item.winner.split(' (')[0] === USER_NAME;
+                });
+                if(wonItem) {
+                    document.getElementById('winnerAlert').classList.remove('d-none');
+                    document.getElementById('winItemName').innerText = wonItem.title;
+                } else {
+                    document.getElementById('winnerAlert').classList.add('d-none');
+                }
+            } catch(e) {}
+        }
+
+        // --- TOP UP SYSTEM ---
+        async function submitTopup() {
+            const amt = document.getElementById('tpAmount').value;
+            const sender = document.getElementById('tpSender').value;
+            const bank = document.getElementById('tpBank').value;
             
-            const btn = document.getElementById('btnLogin');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...'; btn.disabled = true;
+            if(!amt || !sender || !bank) return showToast('Isi semua data');
+            if(amt < 1000) return showToast('Minimal Rp 1.000');
             
-            const u = document.getElementById('u').value.trim();
-            const p = document.getElementById('p').value.trim();
+            const res = await api('/api/topup/request', 'POST', {amount: amt, bank: bank, sender: sender});
+            if(res.success) {
+                showToast(res.message);
+                closeModal('topupModal');
+            } else {
+                showToast(res.message);
+            }
+        }
+
+        async function manageTopups() {
+            const res = await api('/api/topup/list');
+            const list = document.getElementById('topupList');
+            list.innerHTML = '';
             
-            if(!u || !p) {
-                showToast("Username dan Password wajib diisi!", "error");
-                btn.innerHTML = originalText; btn.disabled = false;
+            if(!res.data || res.data.length === 0) {
+                list.innerHTML = '<p class="text-center text-muted">Tidak ada permintaan topup.</p>';
+            } else {
+                // Show Pending first
+                const sorted = res.data.sort((a,b) => (a.status === 'pending' ? -1 : 1));
+                
+                sorted.forEach(t => {
+                    let actions = '';
+                    if(t.status === 'pending') {
+                        actions = `
+                            <button onclick="topupAction('${t.id}', 'approve')" style="color:var(--ios-primary); background:none; border:none; font-size:16px;"><i class="fas fa-check-circle"></i></button>
+                            <button onclick="topupAction('${t.id}', 'reject')" style="color:var(--ios-red); background:none; border:none; font-size:16px;"><i class="fas fa-times-circle"></i></button>
+                        `;
+                    } else {
+                        actions = `<span class="badge badge-${t.status}">${t.status}</span>`;
+                    }
+                    
+                    list.innerHTML += `
+                    <div class="part-item">
+                        <div>
+                            <div class="part-info"><b>${t.user}</b>: ${formatRupiah(t.amount)}</div>
+                            <div class="part-sub">${t.senderName} (${t.bank})</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">${actions}</div>
+                    </div>`;
+                });
+            }
+            openModal('manageTopupModal');
+        }
+
+        async function topupAction(id, action) {
+            if(!confirm(action + '?')) return;
+            const res = await api('/api/topup/action', 'POST', {id, action});
+            if(res.success) { showToast('Berhasil'); manageTopups(); loadData(); }
+            else showToast(res.message);
+        }
+
+        // --- BOT ACTION ---
+        async function action(ph, act) {
+            if(act==='delete'&&!confirm('Hapus?')) return;
+            const r = await api(`/api/${act}/${ph}`, 'POST');
+            if(r.success) { showToast('Sukses'); loadData(); } else showToast(r.message);
+        }
+        async function reqPair() {
+            const ph = document.getElementById('botPhone').value;
+            if(!ph) return showToast('Isi Nomor');
+            const r = await api('/api/add', 'POST', {phone:ph});
+            if(r.success) { document.getElementById('addStep1').classList.add('d-none'); document.getElementById('addStep2').classList.remove('d-none'); pollCode(r.phone); } else showToast(r.message);
+        }
+        function pollCode(ph) {
+            const i = setInterval(async()=>{
+                const r = await api(`/api/code/${ph}`);
+                if(r.code==='CONNECTED') { clearInterval(i); document.getElementById('codeDisplay').innerText="BERHASIL"; setTimeout(()=>{closeModal('addModal');loadData();},1500); }
+                else if(r.code && r.code!=='WAITING') document.getElementById('codeDisplay').innerText=r.code;
+            }, 3000);
+        }
+        
+        // --- DOWNLOADER ---
+        async function doDownload(t) {
+            const u = document.getElementById('dlUrl').value;
+            if(!u) return showToast('Isi URL');
+            const b = document.getElementById(t==='mp4'?'btnMp4':'btnMp3');
+            const og = b.innerHTML; b.innerHTML='...';
+            const r = await api('/api/download', 'POST', {url:u, type:t});
+            b.innerHTML = og;
+            const d = document.getElementById('dlResult');
+            if(r.success && r.data) {
+                d.innerHTML = `<div class="card" style="padding:0"><img src="${r.data.thumbnail}" style="width:100%; height:150px; object-fit:cover;"><div style="padding:15px"><h4 style="font-size:14px; margin-bottom:10px">${r.data.title}</h4><a href="${r.data.url}" target="_blank" class="btn btn-primary btn-block">Download</a></div></div>`;
+            } else d.innerHTML='<p class="text-muted text-center">Gagal</p>';
+        }
+
+        // --- LOTTERY SYSTEM ---
+        let currentLottoId = null;
+
+        async function renderLottery() {
+            const c = document.getElementById('lotteryListContainer');
+            c.innerHTML = '<div class="text-center text-muted" style="padding:20px">Memuat...</div>';
+            const res = await api('/api/lottery');
+            c.innerHTML = '';
+            
+            if(!res.success || res.data.length === 0) {
+                c.innerHTML = '<p class="text-center text-muted" style="padding:20px">Belum ada undian aktif.</p>';
                 return;
             }
 
-            if (!isConnected) await checkServerUrl();
-            
-            // Call API
-            const res = await api('/api/login', 'POST', {user: u, pass: p});
-            btn.innerHTML = originalText; btn.disabled = false;
-
-            if (res.success) {
-                // SUCCESS
-                TOKEN = res.token;
-                localStorage.setItem('auth_token', TOKEN);
-                showToast("Login Berhasil!", "success");
-                checkAuthState(); 
-            } else {
-                // ERROR HANDLING LOGIC
-                // Menangani berbagai kemungkinan pesan error dari server
-                const msg = (res.message || "").toLowerCase();
+            res.data.forEach(item => {
+                const pct = Math.min((item.collected / item.target) * 100, 100);
+                const isWinner = item.winner !== null;
+                const isAdmin = (USER_ROLE === 'admin');
                 
-                if (msg.includes("password") || msg.includes("salah") || msg.includes("invalid")) {
-                    showToast("Password yang Anda masukkan salah!", "error");
-                    document.getElementById('p').value = ""; // Clear password field
-                    document.getElementById('p').focus();
-                } else if (msg.includes("user") || msg.includes("not found") || msg.includes("tidak ditemukan")) {
-                    showToast("Akun tidak ditemukan. Silakan daftar dulu.", "error");
-                    document.getElementById('u').focus();
-                } else {
-                    showToast(res.message || "Terjadi kesalahan login", "error");
+                let btnHtml = '';
+                if (isWinner) {
+                    // Tampilan Pemenang
+                    btnHtml = `
+                        <div style="background:var(--ios-primary); color:white; padding:10px; border-radius:10px; text-align:center; margin-bottom:10px;">
+                            <i class="fas fa-trophy"></i> Menang: <b>${item.winner.split('(')[0]}</b>
+                        </div>`;
+                    
+                    if (isAdmin) {
+                        btnHtml += `
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="recreateLottery(${item.id})" class="btn btn-success btn-block" style="font-size:12px;">
+                                <i class="fas fa-redo"></i> Buat Ulang
+                            </button>
+                            <button onclick="deleteLottery(${item.id})" class="btn btn-danger btn-block" style="font-size:12px;">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </div>`;
+                    }
+                } 
+                else if (isAdmin) {
+                    // Admin: Kelola Peserta (Undian Aktif)
+                    btnHtml = `<button onclick="manageLottery(${item.id})" class="btn btn-purple btn-block"><i class="fas fa-users-cog"></i> Kelola Peserta</button>`;
+                } 
+                else {
+                    btnHtml = `<button onclick="openJoinModal(${item.id}, '${item.title}')" class="btn btn-primary btn-block"><i class="fas fa-wallet"></i> Gabung (Bayar Saldo)</button>`;
                 }
-                
-                resetCaptcha(); // Wajib reset captcha setelah gagal
-            }
-        }
 
-        async function reg() {
-            const u = document.getElementById('ru').value;
-            const p = document.getElementById('rp').value;
-            if(!u || !p) return showToast("Form tidak boleh kosong!", "error");
-            
-            const res = await api('/api/register', 'POST', {user: u, pass: p});
-            if (res.success) { 
-                showToast('Pendaftaran Berhasil! Silakan Login.', 'success'); 
-                switchAuth('login'); 
-            } else {
-                showToast(res.message, 'error');
-            }
-        }
-
-        async function resetPass() {
-            const u = document.getElementById('rUser').value;
-            const ph = document.getElementById('rPhone').value;
-            const np = document.getElementById('rNewPass').value;
-            
-            const res = await api('/api/reset-password', 'POST', {user: u, phone: ph, newPass: np});
-            if (res.success) { 
-                showToast('Password berhasil diubah!', 'success'); 
-                switchAuth('login'); 
-            } else {
-                showToast(res.message, 'error');
-            }
-        }
-
-        function logout() { localStorage.removeItem('auth_token'); location.reload(); }
-
-        // --- MAIN LOGIC ---
-        async function manualRefresh() {
-            const icon = document.getElementById('refreshIcon');
-            icon.classList.add('spin-anim');
-            await checkServerUrl(); 
-            if (isConnected && TOKEN) await loadData(); 
-            setTimeout(() => icon.classList.remove('spin-anim'), 1000);
-            showToast('Data diperbarui', 'success');
-        }
-
-        async function loadData() {
-            if (!isConnected) return;
-            const d = await api('/api/data');
-            if (!d || !d.user) return; 
-
-            document.getElementById('totalBots').innerText = d.sessions ? d.sessions.length : 0;
-            document.getElementById('activeBots').innerText = d.activeBots ? d.activeBots.length : 0;
-            
-            const container = document.getElementById('botListContainer');
-            const mySessions = d.role === 'admin' ? d.sessions : d.sessions.filter(s => d.meta[s]?.owner === d.user);
-            document.getElementById('myBots').innerText = mySessions.length;
-
-            container.innerHTML = '';
-            if(mySessions.length === 0) container.innerHTML = `
-                <div style="text-align:center; padding:30px; color:var(--text-sec)">
-                    <i class="fas fa-robot" style="font-size:40px; margin-bottom:10px; opacity:0.5"></i>
-                    <p>Belum ada bot terhubung.</p>
-                </div>`;
-
-            mySessions.forEach(s => {
-                const isActive = d.activeBots.includes(s);
-                const meta = d.meta[s] || {};
-                const html = `
-                <div class="bot-item">
-                    <div>
-                        <div style="font-weight:bold; font-size:16px; display:flex; align-items:center;">
-                            <span class="status-dot ${isActive?'status-online':''}"></span> +${s}
+                c.innerHTML += `
+                <div class="lotto-card">
+                    ${isWinner ? `<div class="winner-badge"><i class="fas fa-crown"></i> Selesai</div>` : ''}
+                    <img src="${item.img}" class="lotto-img" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/600x300?text=Gambar+Rusak'">
+                    <div class="lotto-body">
+                        <div class="lotto-title">${item.title}</div>
+                        <div class="lotto-meta">
+                            <span>Terkumpul: <b>${formatRupiah(item.collected)}</b></span>
+                            <span>Target: <b>${formatRupiah(item.target)}</b></span>
                         </div>
-                        <div style="font-size:12px; color:var(--text-sec); margin-top:4px"><i class="fas fa-user-circle"></i> ${meta.owner}</div>
-                    </div>
-                    <div style="display:flex; gap:8px">
-                        ${isActive 
-                            ? `<button onclick="action('${s}','stop')" class="btn btn-outline" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-stop"></i></button>
-                               <button onclick="action('${s}','restart')" class="btn btn-outline" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-sync"></i></button>`
-                            : `<button onclick="action('${s}','start')" class="btn btn-success" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-play"></i> Start</button>`
-                        }
-                        ${d.role === 'admin' ? `<button onclick="action('${s}','delete')" class="btn btn-danger" style="padding:6px 12px; font-size:11px; border-radius:8px"><i class="fas fa-trash"></i></button>` : ''}
+                        <div class="lotto-progress-bg"><div class="lotto-progress-bar" style="width: ${pct}%"></div></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:12px; color:var(--text-sec)">
+                            <span>${pct.toFixed(1)}%</span>
+                            <span>${item.participants.length} Peserta</span>
+                        </div>
+                        ${btnHtml}
                     </div>
                 </div>`;
-                container.innerHTML += html;
             });
+        }
+
+        async function createLotteryItem() {
+            const name = document.getElementById('newItemName').value;
+            const img = document.getElementById('newItemImg').value;
+            const target = document.getElementById('newItemTarget').value;
+            if(!name || !target) return showToast("Lengkapi data!");
+            const res = await api('/api/lottery/create', 'POST', {title:name, img, target});
+            if(res.success) { showToast("Dibuat!"); closeModal('createLottoModal'); renderLottery(); }
+        }
+
+        // --- JOIN FLOW (USING WALLET) ---
+        function openJoinModal(id, title) {
+            document.getElementById('joinItemId').value = id;
+            document.getElementById('joinItemTitle').innerText = title;
+            document.getElementById('joinPhone').value = USER_PHONE_CACHE || '';
+            document.getElementById('joinCurrentBalance').innerText = formatRupiah(USER_BALANCE);
             
-            if(document.getElementById('p_name').innerText === '-') loadProfile();
+            // Warning if low balance
+            if(USER_BALANCE < 1000) {
+                 document.getElementById('joinCurrentBalance').innerHTML += ' <span style="color:var(--ios-red)">(Wajib Top Up!)</span>';
+            }
+            openModal('joinLottoModal');
         }
 
-        async function action(ph, act) {
-            if(act === 'delete' && !confirm('Yakin ingin menghapus bot ini dari server?')) return;
-            const res = await api(`/api/${act}/${ph}`, 'POST');
-            if(res.success) { showToast('Berhasil: ' + act, 'success'); loadData(); } else showToast('Gagal: ' + (res.message || 'Error'), 'error');
-        }
+        async function confirmJoinWallet() {
+            const id = parseInt(document.getElementById('joinItemId').value);
+            const amt = parseInt(document.getElementById('joinAmount').value);
+            const ph = document.getElementById('joinPhone').value;
 
-        async function reqPair() {
-            const ph = document.getElementById('botPhone').value;
-            if(!ph) return showToast('Nomor telepon wajib diisi', 'error');
-            const res = await api('/api/add', 'POST', {phone: ph});
+            if(amt < 1000) return showToast("Minimal Rp 1.000");
+            if(USER_BALANCE < amt) return showToast("Saldo tidak cukup! Silakan Top Up.");
+
+            const res = await api('/api/lottery/join', 'POST', { id, amount: amt, phone: ph });
             if(res.success) {
-                document.getElementById('addStep1').classList.add('d-none');
-                document.getElementById('addStep2').classList.remove('d-none');
-                pollCode(res.phone);
-            } else showToast(res.message, 'error');
-        }
-
-        function pollCode(ph) {
-            const interval = setInterval(async () => {
-                const res = await api(`/api/code/${ph}`);
-                const el = document.getElementById('codeDisplay');
-                const st = document.getElementById('pairStatus');
-                if(res.code) {
-                    if(res.code === 'CONNECTED') {
-                        el.innerText = "SUKSES!"; el.style.color = "green"; el.style.border = "1px solid green";
-                        clearInterval(interval);
-                        showToast("Bot Berhasil Terhubung!", "success");
-                        setTimeout(() => { closeModal('addModal'); loadData(); view('bots'); }, 2000);
-                    } else if (['WAITING','STARTING'].includes(res.code)) {
-                        el.innerText = "..."; st.innerHTML = "<i class='fas fa-circle-notch fa-spin'></i> Menunggu kode dari server...";
-                    } else {
-                        el.innerText = res.code; st.innerText = "Ketuk kode untuk menyalin";
-                    }
-                }
-            }, 3000);
-        }
-
-        async function doDownload(type) {
-            const url = document.getElementById('dlUrl').value;
-            if(!url) return showToast('Link URL kosong', 'error');
-            
-            const btn = document.getElementById(type === 'mp4' ? 'btnMp4' : 'btnMp3');
-            const resDiv = document.getElementById('dlResult');
-            const ogText = btn.innerHTML;
-            
-            // Ubah tombol jadi loading
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...'; 
-            resDiv.innerHTML = '';
-            
-            try {
-                const res = await api('/api/download', 'POST', {url, type});
-                btn.innerHTML = ogText;
-                
-                if(res.success && res.data) {
-                    const d = res.data;
-                    let html = '';
-
-                    // === KONDISI 1: JIKA HASIL ADALAH SLIDE (GAMBAR) ===
-                    if (d.images && d.images.length > 0) {
-                        html += `
-                        <div style="background:var(--bg-body); padding:15px; border-radius:12px; border:1px solid var(--border); text-align:left;">
-                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                                <img src="${d.author_avatar || d.thumbnail}" style="width:40px; height:40px; border-radius:50%;">
-                                <div>
-                                    <div style="font-weight:bold; font-size:14px;">${d.author_name || 'TikTok User'}</div>
-                                    <div style="font-size:11px; color:var(--text-sec)">${d.title}</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Audio Player untuk Slide -->
-                            ${d.audio ? `
-                            <div style="background:var(--bg-card); padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid var(--border)">
-                                <div style="font-size:11px; margin-bottom:5px; color:var(--text-sec)"><i class="fas fa-music"></i> Musik Latar</div>
-                                <audio controls style="width:100%; height:30px;">
-                                    <source src="${d.audio}" type="audio/mpeg">
-                                </audio>
-                                <a href="${d.audio}" target="_blank" class="btn btn-outline btn-block" style="margin-top:5px; font-size:11px; padding:5px;">Download MP3</a>
-                            </div>` : ''}
-
-                            <div style="font-size:12px; font-weight:bold; margin-bottom:5px;">Foto Slide (${d.images.length})</div>
-                            
-                            <!-- Grid Gambar -->
-                            <div class="slide-container">
-                                ${d.images.map(img => `
-                                    <div class="slide-item">
-                                        <img src="${img}">
-                                        <a href="${img}" target="_blank" class="slide-dl-btn"><i class="fas fa-download"></i></a>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>`;
-                    } 
-                    else {
-                        html += `
-                        <div style="background:var(--bg-body); padding:15px; border-radius:12px; border:1px solid var(--border)">
-                            <img src="${d.thumbnail}" style="width:100%;max-width:250px;border-radius:10px;margin-bottom:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1)">
-                            <h4 style="margin-bottom:10px; font-size:14px; line-height:1.4">${d.title || 'Video Found'}</h4>
-                            
-                            <a href="${d.url}" target="_blank" class="btn btn-success" style="width:100%; margin-bottom:10px;">
-                                <i class="fas fa-download"></i> DOWNLOAD VIDEO
-                            </a>
-                            
-                            ${d.audio ? `
-                            <a href="${d.audio}" target="_blank" class="btn btn-outline" style="width:100%">
-                                <i class="fas fa-music"></i> DOWNLOAD AUDIO
-                            </a>` : ''}
-                        </div>`;
-                    }
-
-                    resDiv.innerHTML = html;
-                    showToast("Data berhasil diambil!", "success");
-
-                } else {
-                    resDiv.innerHTML = '<p style="color:var(--danger)"><i class="fas fa-times-circle"></i> Media tidak ditemukan atau Private.</p>';
-                    showToast("Gagal mengambil media", "error");
-                }
-            } catch (e) {
-                console.error(e);
-                btn.innerHTML = ogText;
-                resDiv.innerHTML = '<p style="color:var(--danger)">Terjadi kesalahan jaringan.</p>';
-            }
-        }
-
-        async function doCheck() {
-            const ph = document.getElementById('checkPhone').value;
-            if(!ph) return showToast('Nomor tidak boleh kosong', 'error');
-            const btn = document.getElementById('btnCheck');
-            const resDiv = document.getElementById('checkResult');
-            const og = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            
-            const res = await api('/api/check-number', 'POST', {target: ph});
-            btn.innerHTML = og;
-            
-            if(res.success && res.data) {
-                const d = res.data;
-                const pp = d.ppUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-                const about = d.statusDate || 'Privasi / Tidak ada info';
-                const isBiz = d.businessProfile ? true : false;
-
-                resDiv.innerHTML = `
-                <div class="card" style="padding:0; overflow:hidden; border:none; margin-top:15px; box-shadow:var(--shadow)">
-                    <div class="wa-profile-header">
-                        <div class="wa-cover-area"></div>
-                        <img src="${pp}" class="wa-profile-pic" onclick="window.open('${pp}')">
-                        <div style="font-size:20px; font-weight:700; z-index:1; margin-bottom:2px">${d.name || 'Unknown'} ${d.verified?'<i class="fas fa-check-circle" style="color:#25D366"></i>':''}</div>
-                        <div style="color:var(--text-sec); margin-bottom:10px; z-index:1; font-family:monospace">+${d.number}</div>
-                    </div>
-                    <div>
-                        <div class="wa-list-item">
-                            <i class="far fa-comment-alt"></i>
-                            <div>
-                                <div style="font-size:14px; line-height:1.4">${about}</div>
-                                <div style="font-size:11px; color:var(--text-sec); margin-top:2px">Info / Bio</div>
-                            </div>
-                        </div>
-                        <div class="wa-list-item">
-                            <i class="fas fa-tag"></i>
-                            <div>
-                                <div style="font-size:14px">${isBiz ? (d.businessProfile.category || 'Akun Bisnis') : 'Akun Pribadi'}</div>
-                                <div style="font-size:11px; color:var(--text-sec); margin-top:2px">Tipe Akun</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+                showToast(res.message);
+                closeModal('joinLottoModal');
+                loadData(); // Refresh balance
+                renderLottery();
             } else {
-                resDiv.innerHTML = `<div class="card" style="text-align:center; color:var(--danger); margin-top:15px"><i class="fas fa-times-circle"></i> Nomor tidak terdaftar di WhatsApp.</div>`;
-            }
-        }
-        
-        async function loadProfile() {
-            if (!isConnected) return;
-            const res = await api('/api/profile');
-            if(res.name) {
-                document.getElementById('p_name').innerText = res.name;
-                document.getElementById('p_img').src = res.photoUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-                document.getElementById('p_role').innerText = res.role.toUpperCase();
-                document.getElementById('p_uid').innerText = res.userId;
-                document.getElementById('p_join').innerText = res.joinDate;
+                showToast(res.message);
             }
         }
 
-        // --- UI HELPERS ---
-        function view(v) { 
-            document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active')); 
-            document.getElementById('view-' + v).classList.add('active'); 
+        // --- ADMIN MANAGEMENT ---
+        async function manageLottery(id) {
+            const res = await api('/api/lottery');
+            const item = res.data.find(x => x.id === id);
+            if(!item) return;
+
+            currentLottoId = id;
+            document.getElementById('manageTitle').innerText = item.title;
+            const list = document.getElementById('participantList');
+            list.innerHTML = '';
             
-            document.querySelectorAll('.menu-item').forEach(e => e.classList.remove('active'));
-            const activeMenu = document.querySelector(`.menu-item[onclick="view('${v}')"]`);
-            if(activeMenu) activeMenu.classList.add('active');
+            // Only show approved/paid participants
+            const approvedCount = item.participants.filter(p => p.status === 'approved').length;
+            const btnSpin = document.getElementById('btnSpin');
+            
+            if(item.collected >= item.target && approvedCount > 0 && !item.winner) {
+                btnSpin.style.display = 'block';
+                btnSpin.onclick = () => spinWinner(id);
+            } else {
+                btnSpin.style.display = 'none';
+            }
 
-            // Close menu on mobile after click
-            const m = document.getElementById('floatingMenu'); 
-            if(m.style.display === 'flex') toggleMenu();
+            document.getElementById('btnDelete').onclick = () => deleteLottery(id);
+
+            if(item.participants.length === 0) {
+                list.innerHTML = '<p class="text-center text-muted">Belum ada peserta.</p>';
+            } else {
+                item.participants.forEach(p => {
+                    // Since paying with wallet, status is always approved
+                    let badge = `<span class="badge badge-approved">Paid</span>`;
+                    list.innerHTML += `
+                    <div class="part-item">
+                        <div>
+                            <div class="part-info"><b>${p.user}</b> (${p.phone})</div>
+                            <div class="part-sub">${formatRupiah(p.amount)} • ${new Date(p.date).toLocaleDateString()}</div>
+                        </div>
+                        <div>${badge}</div>
+                    </div>`;
+                });
+            }
+            openModal('manageLottoModal');
         }
 
-        function toggleMenu() { 
-            const m = document.getElementById('floatingMenu'); 
-            const btn = document.querySelector('.floating-menu-btn i'); 
-            if(m.style.display === 'flex') { 
-                m.style.display = 'none'; 
-                btn.className = 'fas fa-bars'; 
-            } else { 
-                m.style.display = 'flex'; 
-                btn.className = 'fas fa-times'; 
-            } 
+        async function spinWinner(id) {
+            if(!confirm('Kocok pemenang sekarang?')) return;
+            const res = await api('/api/lottery/spin', 'POST', { id });
+            if(res.success) {
+                showToast(`Pemenang: ${res.winner}`);
+                closeModal('manageLottoModal');
+                renderLottery();
+            } else showToast(res.message);
         }
-
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        async function deleteLottery(id) {
+            if(!confirm('Hapus undian ini permanen?')) return;
+            const res = await api('/api/lottery/delete', 'POST', { id });
+            if(res.success) { showToast('Terhapus'); closeModal('manageLottoModal'); renderLottery(); }
+        }
         
-        function switchAuth(type) { 
-            ['regForm', 'resetForm', 'loginView'].forEach(id => document.getElementById(id).classList.add('d-none'));
-            if(type === 'reg') document.getElementById('regForm').classList.remove('d-none'); 
-            if(type === 'reset') document.getElementById('resetForm').classList.remove('d-none'); 
-            if(type === 'login') document.getElementById('loginView').classList.remove('d-none');
-        }
-        
-        function copyCode() { 
-            const t = document.getElementById('codeDisplay').innerText; 
-            if(t && t !== '...') navigator.clipboard.writeText(t).then(() => showToast('Kode berhasil disalin!', 'success')); 
-        }
-
-        function toggleDarkMode() { 
-            document.body.classList.toggle('dark-mode'); 
-            const isDark = document.body.classList.contains('dark-mode');
-            const btn = document.getElementById('themeToggleBtn');
-            if(btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        // [BARU] Fungsi Buat Ulang
+        async function recreateLottery(id) {
+            if(!confirm('Buat ulang undian ini? (Target & Gambar akan sama, peserta di-reset)')) return;
+            
+            const res = await api('/api/lottery/recreate', 'POST', { id });
+            if(res.success) { 
+                showToast('Undian berhasil dibuat ulang!'); 
+                renderLottery(); 
+            } else {
+                showToast(res.message);
+            }
         }
 
-        window.onload = init;
+        // --- UTILS ---
+        function formatRupiah(n){ return new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}).format(n); }
+        function view(v) { document.querySelectorAll('.view-section').forEach(e=>e.classList.add('d-none')); document.getElementById('view-'+v).classList.remove('d-none'); document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active')); document.getElementById('nav-'+v).classList.add('active'); let t='Dashboard'; if(v==='bots')t='Manager Bot'; if(v==='dl')t='Downloader'; if(v==='lotto'){t='Undian'; renderLottery();} document.querySelector('.header-title').innerText=t; }
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('theme', document.body.classList.contains('dark-mode')?'dark':'light'); document.getElementById('themeBtn').innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>'; }
+        function showToast(m) { const c=document.getElementById('toastContainer'); const t=document.createElement('div'); t.className='toast'; t.innerHTML=`<i class="fas fa-info-circle"></i> ${m}`; c.appendChild(t); setTimeout(()=>t.remove(),3000); }
+        function openModal(id){document.getElementById(id).classList.add('active');} function closeModal(id){document.getElementById(id).classList.remove('active');}
+        function logout(){localStorage.removeItem('auth_token');location.reload();}
+        function switchAuth(t){document.getElementById('loginView').classList.add('d-none'); document.getElementById('regForm').classList.add('d-none'); document.getElementById('resetForm').classList.add('d-none'); if(t==='login')document.getElementById('loginView').classList.remove('d-none'); if(t==='reg')document.getElementById('regForm').classList.remove('d-none'); if(t==='reset')document.getElementById('resetForm').classList.remove('d-none');}
+        async function reg(){const u=document.getElementById('ru').value;const p=document.getElementById('rp').value;const r=await api('/api/register','POST',{user:u,pass:p});if(r.success){showToast('Berhasil');switchAuth('login');}else showToast(r.message);}
+        async function resetPass(){const u=document.getElementById('rUser').value;const ph=document.getElementById('rPhone').value;const np=document.getElementById('rNewPass').value;const r=await api('/api/reset-password','POST',{user:u,phone:ph,newPass:np});if(r.success){showToast('Reset Berhasil');switchAuth('login');}else showToast(r.message);}
+        function copyCode(){navigator.clipboard.writeText(document.getElementById('codeDisplay').innerText);showToast('Disalin');}
     </script>
 </body>
 </html>
