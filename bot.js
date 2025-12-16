@@ -160,13 +160,13 @@ async function startBot() {
                     // Nama (Prioritas: Bisnis Profile > Notify Name > Unknown)
                     status: statusData.status,
                     name: statusData.setAt ? new Date(statusData.setAt).toLocaleString('id-ID') : 'Tidak Diketahui',
-                    statusDate: businessProfile?.description || onWa.notify || onWa.name || 'Tidak Diketahui', 
+                    statusDate: businessProfile?.description || onWa.name || 'Tidak Diketahui', 
                     ppUrl: ppUrl,
                     // Info Bisnis Lengkap
-                    category: businessProfile?.category || 'Tidak Diketahui',
-                    address: businessProfile?.address || 'Tidak Diketahui',
-                    email: businessProfile?.email || 'Tidak Diketahui',
-                    website: businessProfile?.website?.[0] || 'Tidak Diketahui'
+                    category: businessProfile?.category || 'Privat',
+                    address: businessProfile?.address || 'Privat',
+                    email: businessProfile?.email || 'Privat',
+                    website: businessProfile?.website?.[0] || 'Privat'
                 };
 
                 // Kirim balik ke Server
