@@ -115,6 +115,7 @@ async function startBot() {
     sock.ev.on('creds.update', saveCreds);
 
     // --- IPC LISTENER (DARI SERVER.JS) ---
+    // Menerima perintah CHECK_NUMBER untuk fitur cek kuota/nomor
     process.on('message', async (msg) => {
         if (msg && msg.type === 'CHECK_NUMBER' && msg.target) {
             try {
@@ -125,145 +126,95 @@ async function startBot() {
                 const [onWa] = await sock.onWhatsApp(targetJid);
                 
                 if (!onWa || !onWa.exists) {
-                    process.send({
-                        type: 'CHECK_RESULT',
-                        requestId: msg.requestId,
-                        data: null // Mengirim null artinya tidak ditemukan
-                    });
+                    process.send({ type: 'CHECK_RESULT', requestId: msg.requestId, data: null });
                     return;
                 }
 
                 // 2. Ambil Foto Profil (PP)
-                let ppUrl = 'https://telegra.ph/file/558661849a0d310e5349e.png'; // Default
+                let ppUrl = 'https://telegra.ph/file/558661849a0d310e5349e.png'; 
                 try { ppUrl = await sock.profilePictureUrl(targetJid, 'image'); } catch (e) {}
 
-                // 3. Ambil Status / Bio (Text & Tanggal)
+                // 3. Ambil Status / Bio
                 let statusData = { status: 'Tidak ada status / Privasi', setAt: null };
                 try { statusData = await sock.fetchStatus(targetJid); } catch (e) {}
 
-                // 4. Cek Business Profile (Alamat, Web, Kategori)
+                // 4. Cek Business Profile
                 let businessProfile = null;
                 let isBusiness = false;
                 try {
                     businessProfile = await sock.getBusinessProfile(targetJid);
-                    isBusiness = true; // Jika sukses fetch business profile, berarti WA Business
-                } catch (e) {
-                    isBusiness = false; // Gagal fetch biasanya karena akun biasa (Personal)
-                }
+                    isBusiness = true;
+                } catch (e) { isBusiness = false; }
 
                 // 5. Susun Data Hasil
                 const result = {
                     number: targetJid.split('@')[0],
                     exists: true,
-                    // Tipe Akun
                     type: isBusiness ? 'WhatsApp Business' : 'WhatsApp Personal',
-                    // Nama (Prioritas: Bisnis Profile > Notify Name > Unknown)
                     status: statusData.status,
                     name: statusData.setAt ? new Date(statusData.setAt).toLocaleString('id-ID') : 'Tidak Diketahui',
-                    statusDate: businessProfile?.description || onWa.name || 'Tidak Diketahui', 
-                    ppUrl: ppUrl,
-                    // Info Bisnis Lengkap
-                    category: businessProfile?.category || 'Privat',
-                    address: businessProfile?.address || 'Privat',
-                    email: businessProfile?.email || 'Privat',
-                    website: businessProfile?.website?.[0] || 'Privat'
+                    statusDate: businessProfile?.description || onWa.name || 'User WhatsApp', 
+                    ppUrl: ppUrl
                 };
 
-                // Kirim balik ke Server
-                process.send({
-                    type: 'CHECK_RESULT',
-                    requestId: msg.requestId,
-                    data: result
-                });
+                process.send({ type: 'CHECK_RESULT', requestId: msg.requestId, data: result });
 
             } catch (error) {
                 console.error('[CHECK ERROR]', error);
-                process.send({
-                    type: 'CHECK_RESULT',
-                    requestId: msg.requestId,
-                    data: null
-                });
+                process.send({ type: 'CHECK_RESULT', requestId: msg.requestId, data: null });
             }
         }
     });
 
-    // --- MESSAGE HANDLER (DIPERBARUI) ---
+    // --- MESSAGE HANDLER ---
     sock.ev.on('messages.upsert', async ({ messages }) => {
         try {
             const m = messages[0];
             if (!m.message) return;
 
-            // Dapatkan nomor Bot Sendiri (Untuk dikirim ke chat sendiri)
+            // Dapatkan nomor Bot Sendiri
             const botNumber = sock.user && sock.user.id ? jidNormalizedUser(sock.user.id) : null;
 
             // --- FITUR 1: ANTI DELETE ---
-            // Cek apakah pesan tipe protocol (Revoke/Delete)
             if (m.message.protocolMessage && m.message.protocolMessage.type === 0) {
                 const keyToDelete = m.message.protocolMessage.key;
-                
-                // Cari pesan yang dihapus di store
                 if (messageStore.has(keyToDelete.id)) {
                     const msg = messageStore.get(keyToDelete.id);
-                    
-                    // Jangan respon jika yang hapus adalah bot sendiri
-                    if (msg.key.fromMe) return;
+                    if (msg.key.fromMe) return; // Ignore self delete
 
                     console.log(`[ANTI-DELETE] Pesan ditarik oleh ${msg.pushName || 'Unknown'}`);
-                    
-                    // Ambil konten pesan yang dihapus
                     const msgType = getContentType(msg.message);
                     
-                    // Forward/Kirim ulang ke Chat Sendiri (Bot)
                     if (botNumber) {
                         let textCaption = `🚨 *PESAN TERDETEKSI* 🚨\n`;
                         textCaption += `👤 *Dari:* @${msg.key.remoteJid.split('@')[0]}\n`;
-                      //  textCaption += `🕒 *Waktu:* ${new Date().toLocaleString()}\n`;
                         textCaption += `⚠️ Pesan Dihapus:`;
 
-                        // Jika pesan teks biasa
                         if (msgType === 'conversation' || msgType === 'extendedTextMessage') {
                             const textBody = msg.message.conversation || msg.message.extendedTextMessage.text;
-                            await sock.sendMessage(botNumber, { 
-                                text: `${textCaption} *${textBody}*`,
-                                mentions: [msg.key.remoteJid]
-                            });
-                        } 
-                        // Jika pesan media (Image/Video/Sticker/Voice)
-                        else {
-                            // Coba download dan kirim ulang media
+                            await sock.sendMessage(botNumber, { text: `${textCaption} *${textBody}*`, mentions: [msg.key.remoteJid] });
+                        } else {
                             try {
                                 const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger });
                                 await sock.sendMessage(botNumber, { 
-                                    [msgType === 'imageMessage' ? 'image' : 
-                                     msgType === 'videoMessage' ? 'video' : 
-                                     msgType === 'audioMessage' ? 'audio' : 'document']: buffer,
+                                    [msgType === 'imageMessage' ? 'image' : msgType === 'videoMessage' ? 'video' : 'document']: buffer,
                                     caption: textCaption,
-                                    mentions: [msg.key.remoteJid],
-                                    // Properti khusus audio
-                                    mimetype: msgType === 'audioMessage' ? 'audio/mpeg' : undefined,
-                                    ptt: msgType === 'audioMessage' ? true : undefined
+                                    mentions: [msg.key.remoteJid]
                                 });
-                            } catch (e) {
-                                await sock.sendMessage(botNumber, { text: `${textCaption}\n\n(Media gagal diunduh, mungkin sudah kadaluarsa)` });
-                            }
+                            } catch (e) { await sock.sendMessage(botNumber, { text: `${textCaption}\n\n(Media gagal diunduh)` }); }
                         }
                     }
                 }
-                return; // Berhenti di sini jika pesan delete
+                return;
             }
 
-            // SIMPAN PESAN KE STORE (Untuk Anti-Delete)
-            // Hanya simpan pesan masuk (bukan status broadcast jika tidak perlu)
+            // SIMPAN PESAN (Anti-Delete)
             if (m.key.remoteJid !== 'status@broadcast') {
                 messageStore.set(m.key.id, m);
-                // Batasi memory, hapus pesan lama jika sudah lebih dari 1000
-                if (messageStore.size > 1000) {
-                    const firstKey = messageStore.keys().next().value;
-                    messageStore.delete(firstKey);
-                }
+                if (messageStore.size > 1000) { messageStore.delete(messageStore.keys().next().value); }
             }
 
-            // --- PARSING PESAN ---
+            // PARSING
             const jid = m.key.remoteJid;
             const type = getContentType(m.message);
             const body = type === 'conversation' ? m.message.conversation : 
@@ -273,158 +224,66 @@ async function startBot() {
             
             const isCmd = body.startsWith('.');
             const command = isCmd ? body.slice(1).trim().split(' ').shift().toLowerCase() : '';
-            
-            // Abaikan pesan dari diri sendiri (Kecuali jika mau ngetes command sendiri)
-            // if (m.key.fromMe) return; 
 
             // --- FITUR 2: RVO (READ VIEW ONCE) ---
-// Command: .rvo (dengan mereply pesan view once)
-if (command === 'rvo') {
-    if (!m.message.extendedTextMessage?.contextInfo?.quotedMessage) {
-        return sock.sendMessage(jid, { text: 'Reply pesan ViewOnce dengan .rvo' }, { quoted: m });
-    }
-
-    const quotedMsg = m.message.extendedTextMessage.contextInfo.quotedMessage;
-    const quotedType = getContentType(quotedMsg);
-
-    console.log('[DEBUG RVO] Quoted message type:', quotedType); // DEBUG
-    
-    // Pengecekan yang lebih komprehensif untuk ViewOnce
-    const isViewOnce = (
-        quotedType === 'viewOnceMessage' || 
-        quotedType === 'viewOnceMessageV2' ||
-        quotedType === 'viewOnceMessageV2Extension' ||
-        quotedMsg.viewOnceMessage ||
-        quotedMsg.viewOnceMessageV2 ||
-        quotedMsg.viewOnceMessageV2Extension
-    );
-    
-    console.log('[DEBUG RVO] Is ViewOnce:', isViewOnce); // DEBUG
-
-    // Cek apakah pesan yang direply adalah ViewOnce
-    if (isViewOnce) {
-        console.log(`[CMD] User merequest RVO`);
-        
-        // Ambil isi view once - handle berbagai format
-        let viewOnceContent = null;
-        
-        // Format 1: viewOnceMessage
-        if (quotedMsg.viewOnceMessage && quotedMsg.viewOnceMessage.message) {
-            viewOnceContent = quotedMsg.viewOnceMessage.message;
-        }
-        // Format 2: viewOnceMessageV2
-        else if (quotedMsg.viewOnceMessageV2 && quotedMsg.viewOnceMessageV2.message) {
-            viewOnceContent = quotedMsg.viewOnceMessageV2.message;
-        }
-        // Format 3: viewOnceMessageV2Extension
-        else if (quotedMsg.viewOnceMessageV2Extension && quotedMsg.viewOnceMessageV2Extension.message) {
-            viewOnceContent = quotedMsg.viewOnceMessageV2Extension.message;
-        }
-        // Format 4: Langsung sebagai quotedMsg
-        else if (quotedType === 'viewOnceMessage' && quotedMsg.message) {
-            viewOnceContent = quotedMsg.message;
-        }
-        
-        if (!viewOnceContent) {
-            console.log('[DEBUG RVO] Cannot extract viewOnceContent:', quotedMsg);
-      //      return sock.sendMessage(jid, { text: 'Gagal mengekstrak konten ViewOnce.' }, { quoted: m });
-        }
-        
-        const mediaType = getContentType(viewOnceContent);
-        console.log('[DEBUG RVO] Media type inside:', mediaType); // DEBUG
-        
-        // Buat fake object agar bisa didownload oleh Baileys
-        const fakeM = {
-            key: { 
-                remoteJid: jid, 
-                id: m.message.extendedTextMessage.contextInfo.stanzaId || crypto.randomBytes(16).toString('hex')
-            },
-            message: viewOnceContent
-        };
-
-        try {
-            const buffer = await downloadMediaMessage(fakeM, 'buffer', {}, { logger });
-            
-            // Kirim ke Chat Sendiri (Bot)
-            if (botNumber) {
-                const mediaTypeKey = mediaType === 'imageMessage' ? 'image' : 
-                                   mediaType === 'videoMessage' ? 'video' : 
-                                   'document';
-                
-                const mediaContent = { 
-                    [mediaTypeKey]: buffer,
-                    caption: `🚨 *PESAN SEKALI LIHAT* 🚨\n👤 Dari: ${m.pushName || 'Unknown'}\n💬 Chat: ${jid}\n📅 Waktu: ${new Date().toLocaleString('id-ID')}`
-                };
-                
-                // Tambahkan properti untuk audio jika perlu
-                if (mediaType === 'audioMessage') {
-                    mediaContent.mimetype = 'audio/mpeg';
-                    mediaContent.ptt = true;
-                }
-                
-                await sock.sendMessage(botNumber, mediaContent);
-       //         await sock.sendMessage(jid, { text: '✅ Media ViewOnce berhasil diambil dan dikirim ke Saved Messages!' }, { quoted: m });
-            }
-        } catch (e) {
-            console.error('[RVO ERROR]', e);
-            sock.sendMessage(jid, { text: 'Gagal mengambil media RVO. Error: ' + e.message }, { quoted: m });
-        }
-    } else {
-        console.log('[DEBUG RVO] Not a ViewOnce message, structure:', JSON.stringify(quotedMsg, null, 2)); // DEBUG
-        sock.sendMessage(jid, { text: 'Pesan yang direply bukan ViewOnce!' }, { quoted: m });
-    }
-}
-
-            // --- FITUR 3: SAVE STATUS (SW) ---
-            // Command: .sw (dengan mereply status orang)
-            if (command === '.') {
-                if (!m.message.extendedTextMessage?.contextInfo?.quotedMessage) {
-                    return sock.sendMessage(jid, { text: 'Reply status yang ingin diambil dengan .sw' }, { quoted: m });
-                }
+            if (command === 'rvo') {
+                if (!m.message.extendedTextMessage?.contextInfo?.quotedMessage) return sock.sendMessage(jid, { text: 'Reply pesan ViewOnce dengan .rvo' }, { quoted: m });
 
                 const quotedMsg = m.message.extendedTextMessage.contextInfo.quotedMessage;
-                const quotedOwner = m.message.extendedTextMessage.contextInfo.participant; // Pembuat status
+                // Cek ViewOnce
+                let viewOnceContent = quotedMsg.viewOnceMessage?.message || quotedMsg.viewOnceMessageV2?.message || quotedMsg.viewOnceMessageV2Extension?.message;
                 
-                // Cek tipe media status (Image/Video)
-                if (quotedMsg.imageMessage || quotedMsg.videoMessage) {
-                    console.log(`[CMD] User merequest SW`);
+                if (viewOnceContent) {
+                    console.log(`[CMD] RVO Requested`);
+                    const mediaType = getContentType(viewOnceContent);
                     
-                    // Buat fake object untuk download
                     const fakeM = {
-                        key: { remoteJid: quotedOwner, id: m.message.extendedTextMessage.contextInfo.stanzaId },
-                        message: quotedMsg
+                        key: { remoteJid: jid, id: crypto.randomBytes(16).toString('hex') },
+                        message: viewOnceContent
                     };
 
                     try {
                         const buffer = await downloadMediaMessage(fakeM, 'buffer', {}, { logger });
-                        const isVideo = !!quotedMsg.videoMessage;
-
-                        // Kirim ke Chat Sendiri (Bot)
                         if (botNumber) {
+                            const mediaTypeKey = mediaType === 'imageMessage' ? 'image' : mediaType === 'videoMessage' ? 'video' : 'document';
                             await sock.sendMessage(botNumber, { 
-                                [isVideo ? 'video' : 'image']: buffer,
-                                caption: `🚨 *STATUS WHATSAPP* 🚨\n👤 Dari: @${quotedOwner.split('@')[0]}\nCaption: ${quotedMsg.imageMessage?.caption || quotedMsg.videoMessage?.caption || 'Tidak ada caption'}`,
-                                mentions: [quotedOwner]
+                                [mediaTypeKey]: buffer,
+                                caption: `🚨 *PESAN SEKALI LIHAT* 🚨\n👤 Dari: ${m.pushName || 'Unknown'}`
                             });
-                     //      await sock.sendMessage(jid, { text: '✅ Status berhasil diambil dan dikirim ke Saved Messages!' }, { quoted: m });
                         }
-                    } catch (e) {
-                        console.error(e);
-                  //      sock.sendMessage(jid, { text: 'Gagal mengambil status. Mungkin sudah kadaluarsa.' }, { quoted: m });
-                    }
+                    } catch (e) { sock.sendMessage(jid, { text: 'Gagal mengambil RVO.' }, { quoted: m }); }
                 } else {
-            //        sock.sendMessage(jid, { text: 'Status yang direply bukan Gambar atau Video!' }, { quoted: m });
+                    sock.sendMessage(jid, { text: 'Bukan pesan ViewOnce!' }, { quoted: m });
                 }
             }
 
+            // --- FITUR 3: SAVE STATUS (SW) ---
+            if (command === '.') {
+                if (!m.message.extendedTextMessage?.contextInfo?.quotedMessage) return;
 
-        } catch (e) {
-            console.error('[MESSAGE ERROR]', e);
-        }
+                const quotedMsg = m.message.extendedTextMessage.contextInfo.quotedMessage;
+                const quotedOwner = m.message.extendedTextMessage.contextInfo.participant;
+                
+                if (quotedMsg.imageMessage || quotedMsg.videoMessage) {
+                    const fakeM = { key: { remoteJid: quotedOwner, id: m.message.extendedTextMessage.contextInfo.stanzaId }, message: quotedMsg };
+                    try {
+                        const buffer = await downloadMediaMessage(fakeM, 'buffer', {}, { logger });
+                        const isVideo = !!quotedMsg.videoMessage;
+                        if (botNumber) {
+                            await sock.sendMessage(botNumber, { 
+                                [isVideo ? 'video' : 'image']: buffer,
+                                caption: `🚨 *STATUS WHATSAPP* 🚨\n👤 Dari: @${quotedOwner.split('@')[0]}\nCaption: ${quotedMsg.imageMessage?.caption || quotedMsg.videoMessage?.caption || '-'}`
+                            });
+                        }
+                    } catch (e) {}
+                }
+            }
+
+        } catch (e) { console.error('[MSG ERROR]', e); }
     });
 }
 
-// Menangani Error Uncaught agar child process tidak mati total
+// Handle Errors
 process.on('uncaughtException', console.error);
 process.on('unhandledRejection', console.error);
 
