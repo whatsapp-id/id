@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenzo Decryptor V5 - Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        :root {
+            --primary: #00ff41; --bg: #050505; --card: #111; --border: #222;
+        }
+        * { box-sizing: border-box; font-family: 'JetBrains Mono', monospace; }
+        body {
+            background-color: var(--bg); color: #fff; margin: 0; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+        }
+        .app-container {
+            width: 100%; max-width: 750px; background: var(--card);
+            border: 1px solid var(--border); border-radius: 12px; padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+        .glitch-title {
+            color: var(--primary); font-size: 24px; text-align: center;
+            margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 4px;
+        }
+        .upload-zone {
+            border: 2px dashed #333; padding: 20px; text-align: center;
+            border-radius: 8px; cursor: pointer; margin-bottom: 20px; color: #666;
+        }
+        .upload-zone:hover { border-color: var(--primary); color: #999; }
+        .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .input-group { flex: 1; display: flex; flex-direction: column; }
+        label { font-size: 10px; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
+        select, textarea {
+            background: #000; border: 1px solid #333; color: #fff;
+            padding: 12px; border-radius: 6px; outline: none; font-size: 12px;
+        }
+        textarea { height: 120px; resize: none; }
+        select:focus, textarea:focus { border-color: var(--primary); }
+        .btn-main {
+            width: 100%; padding: 15px; background: var(--primary); color: #000;
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; margin-top: 10px; font-size: 14px;
+        }
+        .btn-main:hover { background: #00cc33; transform: translateY(-1px); }
+        
+        #logArea {
+            background: #000; border: 1px solid #1a1a1a; padding: 10px;
+            margin-top: 20px; font-size: 10px; color: #555; max-height: 80px; overflow-y: auto;
+        }
+        #resultArea {
+            margin-top: 25px; display: none; animation: fadeIn 0.5s;
+        }
+        .result-box {
+            background: #000; border-left: 3px solid var(--primary); padding: 20px;
+            font-size: 13px; color: var(--primary); position: relative; white-space: pre-wrap;
+        }
+        .copy-trigger {
+            position: absolute; right: 10px; top: 10px; background: #222;
+            color: #fff; border: none; padding: 5px 10px; font-size: 10px; cursor: pointer; border-radius: 4px;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="glitch-title">KENZO DECRYPTOR V5</div>
+    <p style="text-align: center; font-size: 10px; color: #444; margin-top: -5px; margin-bottom: 25px;">UNIVERSAL VPN SNIPPER • ULTIMATE EDITION</p>
+
+    <div class="upload-zone" id="dropZone">
+        <span id="fileName">Klik atau Drag File Config ke Sini</span>
+        <input type="file" id="fileInput" hidden>
+    </div>
+
+    <div class="input-row">
+        <div class="input-group">
+            <label>Extension Mode</label>
+            <select id="extMode"></select>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Encrypted Data / Link</label>
+        <textarea id="rawData" placeholder="Masukkan data terenkripsi atau link (tnl://, sks://)..."></textarea>
+    </div>
+
+    <button class="btn-main" onclick="startDecryption()">Initialize Decryption</button>
+
+    <div id="logArea">Terminal ready...</div>
+
+    <div id="resultArea">
+        <label>Decrypted Payload Output</label>
+        <div class="result-box" id="output">
+            <button class="copy-trigger" onclick="copyText()">COPY</button>
+            <span id="outputText"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+const PASSWORDS = {
+    '.bdi': '@technore 2022', '.nm': 'X25ldHN5bmFfbmV0bW9kXw==', '.tut': 'fubvx788b46v',
+    '.tmt': '$$$@mfube11!!_$$))012b4u', '.sks': 'dyv35224nossas!!', '.ziv': 'fubvx788b46v',
+    '.pb': 'Cw1G6s0K8fJVKZmhSLZLw3L1R3ncNJ2e', '.temt': 'fubvx788B4mev', '.tsn': 'thirdy1996624',
+    '.etun': 'dyv35224nossas!!', '.pxp': 'bKps&92&', '.ace': 'Ed ', '.tsd': 'waiting',
+    '.ost': 'gggggg', '.wt': 'fuMnrztkzbQ', '.tnl': 'A^ST^f6ASG6AS5asd', '.fks': 'fubvx788b46v',
+    '.gv': 'Ed ', '.act': 'fubvx788b46v', '.cnet': 'cnt', '.gibs': 'Ed ', '.dvd': 'dyv35224nossas!!',
+    '.ftp': 'Version6', '.fthp': 'furious0982', '.jph': 'fubvx788b46v', '.xsks': 'c7-YOcjyk1k',
+    '.ht': 'error', '.ssi': 'Jicv', '.kt': 'kt', '.dvs': 'mtscrypt', '.fnet': '62756C6F6B',
+    '.mc': 'fubvx788b46v', '.hub': 'trfre699g79r', '.grd': 'fubvx788b46v', '.hta': 'Ed ',
+    '.eug': 'fubvx788b46v', '.sds': 'rdovx202b46v', '.htp': 'chanika acid, gimsara htpcag!!',
+    '.bbb': 'xcode788b46z', '.ccc': 'fubgf777gf6', '.ddd': 'fubvx788b46vcatsn', '.eee': 'dyv35182!',
+    '.cln': 'fubvx788b46v', '.cyh': 'dyv35182!', '.agn': 'cigfhfghdf665557', '.Tcv2': 'fubvx788b46v',
+    '.NT': '0x0', '.ai': 'Ed ', '.cks': '2$dOxdIb6hUpzb*Y@B0Nj!T!E2A6DOLlwQQhs4RO6QpuZVfjGx',
+    '.sksrv': 'y$I@no5#lKuR7ZH#eAgORu6QnAF*vP0^JOTyB1ZQ&*w^RqpGkY', '.garuda': 'fubvx788b46v',
+    '.tpp': 'Ed ', '.sky': 'fubux788b46v', '.max': 'Ed ',
+};
+
+const select = document.getElementById('extMode');
+Object.keys(PASSWORDS).sort().forEach(e => {
+    let opt = document.createElement('option');
+    opt.value = e; opt.innerText = e;
+    if(e === '.tnl') opt.selected = true;
+    select.appendChild(opt);
+});
+
+function log(msg) {
+    const l = document.getElementById('logArea');
+    l.innerHTML += `> ${msg}<br>`;
+    l.scrollTop = l.scrollHeight;
+}
+
+// Upload Handling
+document.getElementById('dropZone').onclick = () => document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange = (e) => {
+    let file = e.target.files[0];
+    if(!file) return;
+    document.getElementById('fileName').innerText = file.name;
+    let ext = "." + file.name.split('.').pop().toLowerCase();
+    if(PASSWORDS[ext]) select.value = ext;
+    let reader = new FileReader();
+    reader.onload = (ev) => {
+        document.getElementById('rawData').value = ev.target.result;
+        log(`File ${file.name} loaded.`);
+        startDecryption();
+    };
+    reader.readAsText(file);
+};
+
+// Main Engine
+async function startDecryption() {
+    const raw = document.getElementById('rawData').value.trim();
+    const ext = select.value;
+    const outCont = document.getElementById('resultArea');
+    const outText = document.getElementById('outputText');
+
+    if(!raw) return log("Error: No data provided.");
+    outCont.style.display = 'none';
+    log(`Initializing for ${ext}...`);
+
+    try {
+        // 1. Pre-process (Clean URI & Wrappers)
+        let data = raw.replace(/^[a-z0-9-]+\:\/\//i, '').replace(/\s/g, '');
+        
+        // 2. Netmod ECB Logic
+        if (raw.toLowerCase().startsWith('nm-') || ext === '.nm') {
+            log("Mode: Netmod AES-ECB detected.");
+            const keyHex = CryptoJS.enc.Base64.parse("X25ldHN5bmFfbmV0bW9kXw==");
+            const dec = CryptoJS.AES.decrypt(data, keyHex, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 });
+            const res = dec.toString(CryptoJS.enc.Utf8);
+            if(!res) throw new Error("Invalid Netmod Data");
+            showOutput(res.split(/[\n,]/));
+            return;
+        }
+
+        // 3. GCM Logic (TNL/SKS/PB)
+        log("Checking GCM wrappers...");
+        let workingStr = data;
+        // Jika tidak ada titik, kemungkinan dibungkus base64 utuh (kasus string tnl yang Anda kirim)
+        if (!data.includes('.')) {
+            log("No dots found. Unwrapping primary Base64 layer...");
+            try {
+                workingStr = atob(data.replace(/[^A-Za-z0-9+/=]/g, ''));
+            } catch(e) { throw new Error("Base64 Unwrapping Failed."); }
+        }
+
+        const parts = workingStr.split('.');
+        if(parts.length < 3) throw new Error("Malformed GCM structure (Salt.IV.Data missing)");
+
+        log("Extracting Salt, IV, and Ciphertext...");
+        const salt = Uint8Array.from(atob(parts[0]), c => c.charCodeAt(0));
+        const iv = Uint8Array.from(atob(parts[1]), c => c.charCodeAt(0));
+        const fullPayload = Uint8Array.from(atob(parts[2]), c => c.charCodeAt(0));
+
+        const ciphertext = fullPayload.slice(0, -16);
+        const tag = fullPayload.slice(-16);
+
+        log("Deriving key using PBKDF2 (1000 iterations)...");
+        let pass = PASSWORDS[ext];
+        if (ext === '.nm') pass = atob(pass);
+        
+        const passBuf = new TextEncoder().encode(pass);
+        const baseKey = await crypto.subtle.importKey("raw", passBuf, "PBKDF2", false, ["deriveKey"]);
+        const derivedKey = await crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: salt, iterations: 1000, hash: "SHA-256" },
+            baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
+        );
+
+        log("Attempting AES-256-GCM Decryption...");
+        const decryptedBuf = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: iv, tagLength: 128 },
+            derivedKey, new Uint8Array([...ciphertext, ...tag])
+        );
+
+        const resultText = new TextDecoder().decode(decryptedBuf);
+        log("Success! Parsing configuration...");
+
+        let pairs = [];
+        let entryRegex = /<entry key="(.*?)">(.*?)<\/entry>|<entry key="(.*?)"\s*\/>/g;
+        let m;
+        while ((m = entryRegex.exec(resultText)) !== null) {
+            pairs.push(`${m[1] || m[3]}:${m[2] || ""}`);
+        }
+        if(pairs.length === 0) pairs = resultText.split('\n');
+
+        showOutput(pairs);
+
+    } catch (e) {
+        log(`CRITICAL ERROR: ${e.message}`);
+        alert("Decryption Failed! Check Terminal Log.");
+    }
+}
+
+function showOutput(lines) {
+    const map = { 'host': 'Host', 'ssh_host': 'Host', 'ssh_port': 'Port', 'ssh_user': 'User', 'ssh_pass': 'Pass', 'ssh_password': 'Pass', 'payload': 'Payload', 'sni': 'SNI', 'remark': 'Remark', 'notes': 'Note' };
+    let config = {};
+    lines.forEach(line => {
+        let [k, ...v] = line.split(':');
+        if(!k) return;
+        let key = k.trim().replace(/["{}[\]]/g, '').toLowerCase();
+        let val = v.join(':').trim().replace(/["{}[\]]/g, '').replace(/,$/, '');
+        if(val.includes('<')) val = val.replace(/<[^>]*>/g, ' ').trim();
+        config[map[key] || key] = val;
+    });
+
+    let final = "";
+    Object.keys(config).sort().forEach(k => {
+        if(config[k] && config[k] !== "null") final += `[ᯤ] [${k.toUpperCase()}]: ${config[k]}\n`;
+    });
+    
+    document.getElementById('outputText').innerText = final + `\n===========================\nDeveloper: @Kenzo`;
+    document.getElementById('resultArea').style.display = 'block';
+}
+
+function copyText() {
+    navigator.clipboard.writeText(document.getElementById('outputText').innerText);
+    log("Copied to clipboard.");
+}
+</script>
+
+</body>
+</html>
